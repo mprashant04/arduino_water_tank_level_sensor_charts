@@ -2,18 +2,15 @@
   <head>
   <title>Water Tank Level Sensor</title>
 
-  <style type="text/css">
-  body { background-color: #ddd; }
+<style type="text/css">
+  body { background-color: #ffffff; }
   #container { height: 100%; width: 100%; display: table; }
   #inner { vertical-align: middle; display: table-cell; }
   #gauge_div { width: 120px; margin: 0 auto; }
 </style>
+
 <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>
-<!--script src="/assets/js/jquery-1.12.0.min.js"></script-->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!--script src="/assets/js/Chart.min.js"></script-->
-
-
 
 <script>
 
@@ -185,7 +182,7 @@ chartObjects = {};
 
 
 
-  function drawLineChart(chartLabel, fieldNumber, canvasId, samples) {
+  function drawLineChart(chartLabel, fieldNumber, canvasId, samples, lineColor, pointColor) {
 
    
     var jsonData = $.ajax({
@@ -206,12 +203,16 @@ chartObjects = {};
         labels : labels,
         datasets : [{
 			label: chartLabel,
-            fillColor             : "rgba(151,187,205,0.2)",
-            strokeColor           : "rgba(151,187,205,1)",
-            pointColor            : "rgba(151,187,205,1)",
-            pointStrokeColor      : "#fff",
-            pointHighlightFill    : "#fff",
-            pointHighlightStroke  : "rgba(151,187,205,1)",
+			
+			fill: false,
+			borderColor: lineColor,
+			borderDash: [3, 3],
+			backgroundColor: pointColor,
+			pointBackgroundColor: pointColor,
+			pointBorderColor: pointColor,
+			pointHoverBackgroundColor: pointColor,
+			pointHoverBorderColor: pointColor,
+			
             data                  : data
         }]
       };
@@ -239,8 +240,8 @@ chartObjects = {};
 	function reloadCharts(samples){
 		lastSamples = samples;
 		//alert (samples);
-	  drawLineChart("Signal", "1", "lineChartSignal", samples);
-	  drawLineChart("Level %", "2", "lineChartPercent", samples);
+	  drawLineChart("Signal", "1", "lineChartSignal", samples, "#0080ff","#6666ff");
+	  drawLineChart("Level %", "2", "lineChartPercent", samples, "#99cc00","#33cc00");
 	  
 	  if (document.getElementById('info') != null){
 		document.getElementById('info').innerHTML = new Date().formatHHMMSS() + " (" + samples + ")";
