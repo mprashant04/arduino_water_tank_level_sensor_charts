@@ -13,64 +13,17 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!--script src="/assets/js/Chart.min.js"></script-->
 
-<canvas id="myLineChart" width="740" height="200"></canvas>
+
 
 <script>
-  function drawLineChart() {
 
-    // Add a helper to format timestamp data
-    Date.prototype.formatMMDDYYYY = function() {
-        return (this.getMonth() + 1) +
-        "/" +  this.getDate() +
-        "/" +  this.getFullYear();
-    }
-
-    var jsonData = $.ajax({
-      url: 'https://api.thingspeak.com/channels/1440877/fields/1.json?results=200',
-      dataType: 'json',
-    }).done(function (results) {
-
-      // Split timestamp and data into separate arrays
-      var labels = [], data=[];
-      results["feeds"].forEach(function(packet) {
-        labels.push(new Date(packet.created_at).formatMMDDYYYY());
-        data.push(parseFloat(packet.field1));
-      });
-
-      // Create the chart.js data structure using 'labels' and 'data'
-      var tempData = {
-        labels : labels,
-        datasets : [{
-            fillColor             : "rgba(151,187,205,0.2)",
-            strokeColor           : "rgba(151,187,205,1)",
-            pointColor            : "rgba(151,187,205,1)",
-            pointStrokeColor      : "#fff",
-            pointHighlightFill    : "#fff",
-            pointHighlightStroke  : "rgba(151,187,205,1)",
-            data                  : data
-        }]
-      };
-
-      // Get the context of the canvas element we want to select
-      var ctx = document.getElementById("myLineChart").getContext("2d");
-
-      // Instantiate a new chart
-      var myLineChart = new Chart(ctx, {
-		 //bezierCurve: false,
-		 type: 'line',
-         data: tempData
-         //options: lineChartOptions
-      });
-    });
-  }
-
-  drawLineChart();
-  
-  //====================================================================
-  // Set the global Chart values (these will apply to all charts)
+lastSamples= 200;
+ 
+//======Global chart options ===========================================================================================
+ 
 Chart.defaults.global = {
   // Boolean - Whether to animate the chart
-  animation: true,
+  animation: false,
 
   // Number - Number of animation steps
   animationSteps: 60,
@@ -84,7 +37,7 @@ Chart.defaults.global = {
   //  easeInSine, easeOutExpo, easeOutCirc, easeOutCubic, easeInQuint,
   //  easeInElastic, easeInOutSine, easeInOutQuint, easeInBounce,
   //  easeOutElastic, easeInCubic]
-  animationEasing: "easeOutQuart",
+  animationEasing: "easeInBounce",
 
   // Boolean - If we should show the scale at all
   showScale: true,
@@ -131,7 +84,7 @@ Chart.defaults.global = {
   scaleFontColor: "#666",
 
   // Boolean - whether or not the chart should be responsive and resize when the browser does.
-  responsive: false,
+  responsive: true,
 
   // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
   maintainAspectRatio: true,
@@ -164,7 +117,7 @@ Chart.defaults.global = {
   tooltipTitleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
 
   // Number - Tooltip title font size in pixels
-  tooltipTitleFontSize: 14,
+  tooltipTitleFontSize: 8,
 
   // String - Tooltip title font weight style
   tooltipTitleFontStyle: "bold",
@@ -202,14 +155,131 @@ Chart.defaults.global = {
   // Function - Will fire on animation completion.
   onAnimationComplete: function(){}
 }
+
+
+//==================================================================================================
+
+ // Add a helper to format timestamp data
+Date.prototype.formatMMDDYYYY = function() {
+	return (this.getMonth() + 1) +
+	"/" +  this.getDate() +
+	"/" +  this.getFullYear() ;
+}
+
+Date.prototype.formatHHMM = function() {
+	return this.getHours() + ":" +  pad(this.getMinutes(),2);
+}
+
+Date.prototype.formatHHMMSS = function() {
+	return this.getHours() + ":" +  pad(this.getMinutes(),2) + ":" +  pad(this.getSeconds(),2);
+}
+
+function pad(num, size) {
+    num = num.toString();
+    while (num.length < size) num = "0" + num;
+    return num;
+}
+
+
+chartObjects = {};
+
+
+
+  function drawLineChart(chartLabel, fieldNumber, canvasId, samples) {
+
+   
+    var jsonData = $.ajax({
+      url: 'https://api.thingspeak.com/channels/1440877/fields/' + fieldNumber + '.json?results=' + samples,
+      dataType: 'json',
+    }).done(function (results) {
+
+      // Split timestamp and data into separate arrays
+      var labels = [], data=[];
+      results["feeds"].forEach(function(packet) {
+        labels.push(new Date(packet.created_at).formatHHMM());
+		//labels.push(new Date(packet.created_at));
+        data.push(parseFloat(packet["field"  + fieldNumber]));
+      });
+
+      // Create the chart.js data structure using 'labels' and 'data'
+      var tempData = {
+        labels : labels,
+        datasets : [{
+			label: chartLabel,
+            fillColor             : "rgba(151,187,205,0.2)",
+            strokeColor           : "rgba(151,187,205,1)",
+            pointColor            : "rgba(151,187,205,1)",
+            pointStrokeColor      : "#fff",
+            pointHighlightFill    : "#fff",
+            pointHighlightStroke  : "rgba(151,187,205,1)",
+            data                  : data
+        }]
+      };
+
+      // Get the context of the canvas element we want to select
+      var ctx = document.getElementById(canvasId).getContext("2d");
+
+      // Instantiate a new chart
+	  
+	  if (chartObjects[chartLabel] != null){
+		chartObjects[chartLabel].destroy();
+	  }
+	  
+	chartObjects[chartLabel] =  new Chart(ctx, {
+		 //bezierCurve: false,
+		 type: 'line',
+		 data: tempData,
+		 options: Chart.defaults.global
+	  });
+
+      
+    });
+  }
+
+	function reloadCharts(samples){
+		lastSamples = samples;
+		//alert (samples);
+	  drawLineChart("Signal", "1", "lineChartSignal", samples);
+	  drawLineChart("Level %", "2", "lineChartPercent", samples);
+	  
+	  if (document.getElementById('info') != null){
+		document.getElementById('info').innerHTML = new Date().formatHHMMSS() + " (" + samples + ")";
+	  }
+	}
+		
+	function refreshCharts(){
+		reloadCharts(lastSamples);
+	}
+  
+	refreshCharts();
+	
+	setInterval(refreshCharts, 5000);
+ 
 </script>
 
   </head>
   <body>
     <div id="container">
       <div id="inner">
-        <div id="gauge_div"></div>
-      </div>
+	  
+	  <button onclick="reloadCharts(50)">50</button>
+	  <button onclick="reloadCharts(100)">100</button>
+	  <button onclick="reloadCharts(200)">200</button>
+	  <button onclick="reloadCharts(300)">300</button>
+	  <button onclick="reloadCharts(400)">400</button>
+	  <button onclick="reloadCharts(500)">500</button>
+	  <button onclick="reloadCharts(750)">750</button>
+	  <button onclick="reloadCharts(1000)">1000</button>
+	  <button onclick="reloadCharts(1500)">1500</button>
+	  <button onclick="reloadCharts(2000)">2000</button>
+	  <button onclick="refreshCharts()">refresh</button>
+	  <label id="info"/>   </label>
+	  
+	  
+	  <canvas  id="lineChartSignal"  width="300" height="70"  style="border:1px solid black"></canvas>
+	  <canvas  id="lineChartPercent"  width="300" height="70"  style="border:1px solid black"></canvas>
+	  		
+	 
     </div>
   </body>
 </html>
