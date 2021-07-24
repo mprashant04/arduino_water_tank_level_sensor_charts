@@ -271,6 +271,7 @@ chartObjects = {};
 	
 	function disableRefresh(){
 	      enableAutoRefresh = 0;
+	      document.getElementById('info').innerHTML = "Disabled...";
 	}
   
 	
@@ -304,6 +305,7 @@ chartObjects = {};
 	  <button onclick="redirect(1500)">1500</button>
 	  <button onclick="redirect(2000)">2000</button>	  
 	  <button onclick="redirect(4000)">4000</button>	  
+	  <button onclick="redirect(8000)">8000</button>	  
 	  <button onclick="disableRefresh()">Disable refresh</button>	  
 	  <label id="info"/>   </label>
 	  
