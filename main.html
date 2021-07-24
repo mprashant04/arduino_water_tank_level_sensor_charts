@@ -79,7 +79,9 @@ chartObjects = {};
 		val = { x:null, y:null};
 		val.x = new Date(packet.created_at).formatMMDDYYYYHHMMSS();
 		val.y = parseFloat(packet["field"  + fieldNumber]);
-		data.push (val);		
+		data.push (val);
+
+		//console.log(val);
       });
   
    
@@ -94,7 +96,7 @@ chartObjects = {};
 	  }
 	  
 	  //var timeFormat = 'DD/MM/YYYY';
-	  var timeFormat = 'MM/DD/YYYY HH:mm:SS';
+	  var timeFormat = 'MM/DD/YYYY HH:mm:ss';
 	  
 	  var config = {
         type:    'line',
@@ -128,7 +130,7 @@ chartObjects = {};
                     type:       "time",
                     time:       {
                         format: timeFormat,
-                        tooltipFormat: 'HH:mm:ss (DD/MMM)'
+                        tooltipFormat: 'HH:mm:ss   (DD/MMM)'
                     }
                 }],
                 yAxes: [{
