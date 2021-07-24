@@ -15,6 +15,7 @@
 <script>
 
 lastSamples= 200;
+enableAutoRefresh = 1;
  
 //======Global chart options ===========================================================================================
  
@@ -258,12 +259,18 @@ chartObjects = {};
 	}
 	
 	function reloadPage(){
-		window.location.reload();
+		if (enableAutoRefresh ==1){
+			window.location.reload();
+		}
 		//window.location = window.location;
 	}
 	
 	function redirect(samples){
 		window.location.replace('https://mprashant04.github.io/arduino_water_tank_level_sensor_charts/main.html?samples=' + samples);
+	}
+	
+	function disableRefresh(){
+	      enableAutoRefresh = 0;
 	}
   
 	
@@ -296,6 +303,8 @@ chartObjects = {};
 	  <button onclick="redirect(1000)">1000</button>
 	  <button onclick="redirect(1500)">1500</button>
 	  <button onclick="redirect(2000)">2000</button>	  
+	  <button onclick="redirect(4000)">4000</button>	  
+	  <button onclick="disableRefresh()">Disable refresh</button>	  
 	  <label id="info"/>   </label>
 	  
 	  
