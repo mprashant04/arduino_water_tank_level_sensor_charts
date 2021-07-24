@@ -10,7 +10,6 @@
 </style>
 
 <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>
-<!--script src="https://cdn.jsdelivr.net/npm/chart.js"></script-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.js"></script>
 
 <script>
@@ -129,13 +128,23 @@ chartObjects = {};
                     type:       "time",
                     time:       {
                         format: timeFormat,
-                        tooltipFormat: 'll'
+                        tooltipFormat: 'HH:mm:ss (DD/MMM)'
                     }
                 }],
                 yAxes: [{
                     
                 }]
-            }
+            },
+			tooltips: {
+				callbacks: {
+					label: function(tooltipItem, data) {
+						return tooltipItem.yLabel ;
+					},
+					//title: function(tooltipItem, data) {
+					//	return "";
+					//}
+				}
+			}
         }
     };
 
