@@ -19,6 +19,7 @@ lastSamples= 200;
 enableAutoRefresh = 1;
 lastEntryId = -1;
 script_version = "v0.2"
+chartObjects = {};
 
  // Add a helper to format timestamp data
 Date.prototype.formatMMDDYYYY = function() {
@@ -67,44 +68,8 @@ function beep() {
 	//});
 	//sound.play();
 };
-
-chartObjects = {};
-
-
-
-  function drawLineChart(chartLabel, fieldNumber, canvasId,  lineColor, pointColor) {
-
-   
-    var jsonData = $.ajax({
-      url: 'https://api.thingspeak.com/channels/1440877/fields/' + fieldNumber + '.json?results=' + getParameterByName('samples'),
-      dataType: 'json',
-    }).done(function (results) {
-
-      
-      var labels = [], data=[];
-      results["feeds"].forEach(function(packet) {        
-		
-		val = { x:null, y:null};
-		val.x = new Date(packet.created_at).formatMMDDYYYYHHMMSS();
-		val.y = parseFloat(packet["field"  + fieldNumber]);
-		data.push (val);
-
-		//console.log(val);
-      });
-  
-   
-
-      // Get the context of the canvas element we want to select
-      var ctx = document.getElementById(canvasId).getContext("2d");
-
-      // Instantiate a new chart
-	  
-	  if (chartObjects[chartLabel] != null){
-		chartObjects[chartLabel].destroy();
-	  }
-	  	  
-	  
-	  var config = {
+function buildChartConfig(chartLabel, lineColor, pointColor, data){
+	  return {
         type:    'line',
         data:    {
             datasets: [
@@ -154,11 +119,39 @@ chartObjects = {};
 				}
 			}
         }
-    };
+    }
+}
 
-	  
-	chartObjects[chartLabel] =  new Chart(ctx, config);
 
+
+
+  function drawLineChart(chartLabel, fieldNumber, canvasId,  lineColor, pointColor) {
+
+   
+    var jsonData = $.ajax({
+      url: 'https://api.thingspeak.com/channels/1440877/fields/' + fieldNumber + '.json?results=' + getParameterByName('samples'),
+      dataType: 'json',
+    }).done(function (results) {
+
+      
+      var labels = [], data=[];
+      results["feeds"].forEach(function(packet) {        
+		
+		val = { x:null, y:null};
+		val.x = new Date(packet.created_at).formatMMDDYYYYHHMMSS();
+		val.y = parseFloat(packet["field"  + fieldNumber]);
+		data.push (val);
+
+		//console.log(val);
+      });
+  
+	  if (chartObjects[chartLabel] != null){
+		chartObjects[chartLabel].destroy();
+	  }
+
+
+      var ctx = document.getElementById(canvasId).getContext("2d");
+	  chartObjects[chartLabel] =  new Chart(ctx, buildChartConfig(chartLabel, lineColor, pointColor, data));
       
     });
   }
