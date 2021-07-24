@@ -190,7 +190,7 @@ chartObjects = {};
 			}
 			else{
 				lastEntryId = entryId;
-			}			  
+			}
 		 });
 	}
 	
@@ -199,8 +199,10 @@ chartObjects = {};
 			var sel = document.getElementById("mySelect");
 			samples = sel.options[sel.selectedIndex].text;			
 		}	
-		window.location.replace('https://mprashant04.github.io/arduino_water_tank_level_sensor_charts/main.html?samples=' + samples + "&time=" + new Date().formatMMDDYYYYHHMMSS ());
-		//window.location.replace('file:///C:/Users/e083356/Desktop/Temp/main.html?samples=' + samples);
+
+		var path = location.protocol + '//' + location.host + location.pathname;
+		//alert (path);		
+		window.location.replace(path + '?samples=' + samples + "&time=" + new Date().formatMMDDYYYYHHMMSS ());
 	}
 	
 	function disableRefresh(){
@@ -262,4 +264,3 @@ chartObjects = {};
     </div>
   </body>
 </html>
-
