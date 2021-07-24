@@ -18,8 +18,7 @@
 lastSamples= 200;
 enableAutoRefresh = 1;
 lastEntryId = -1;
-script_version = "v0.2"
-chartObjects = {};
+script_version = "v0.3"
 
  // Add a helper to format timestamp data
 Date.prototype.formatMMDDYYYY = function() {
@@ -145,13 +144,11 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data){
 		//console.log(val);
       });
   
-	  if (chartObjects[chartLabel] != null){
-		chartObjects[chartLabel].destroy();
-	  }
+	  
 
 
       var ctx = document.getElementById(canvasId).getContext("2d");
-	  chartObjects[chartLabel] =  new Chart(ctx, buildChartConfig(chartLabel, lineColor, pointColor, data));
+	  new Chart(ctx, buildChartConfig(chartLabel, lineColor, pointColor, data));
       
     });
   }
@@ -218,31 +215,47 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data){
   </head>
   <body>
     <div id="container">
-      <div id="inner">	   
-	   <select  id="mySelect" onchange="redirect()">
-			<option>Samples</option>
-			<option>10</option>
-			<option>50</option>
-			<option>100</option>
-			<option>200</option>
-			<option>300</option>
-			<option>400</option>
-			<option>500</option>
-			<option>750</option>
-			<option>1000</option>				
-			<option>2000</option>				
-			<option>3000</option>				
-			<option>4000</option>				
-			<option>5000</option>				
-			<option>7500</option>				
-			<option>10000</option>				
-			<option>15000</option>				
-	  </select>
-	  <label id="infoSamples"/></label>	  
-	  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	    
-	  <button onclick="disableRefresh()">Disable refresh</button>	  	  
-	  <label id="info"/></label>	  
+      <div id="inner">	
+
+		<table style=" width: 100%;">
+			<tr>
+				<td style="text-align:left">
+					<div align = "left">	
+						<select  id="mySelect" onchange="redirect()">
+								<option>Samples</option>
+								<option>10</option>
+								<option>50</option>
+								<option>100</option>
+								<option>200</option>
+								<option>300</option>
+								<option>400</option>
+								<option>500</option>
+								<option>750</option>
+								<option>1000</option>				
+								<option>2000</option>				
+								<option>3000</option>				
+								<option>4000</option>				
+								<option>5000</option>				
+								<option>7500</option>				
+								<option>10000</option>				
+								<option>15000</option>				
+						  </select>		  
+						  <label id="infoSamples"/></label>	  
+				  </div>	
+				</td>
+				<td style="text-align:right">
+					<div>		
+						<button onclick="disableRefresh()">Disable refresh</button>	  	  
+						<label id="info"/></label>	  
+					</div>	
+				</td>
+			</tr>
+		</table>  
+
+	  
+		
+			
+		
 	  	  
 	  <canvas  id="lineChartSignal"  width="300" height="55"  style="border:1px solid black"></canvas>
 	  <canvas  id="lineChartPercent"  width="300" height="55"  style="border:1px solid black"></canvas>
