@@ -18,7 +18,7 @@
 lastSamples= 200;
 enableAutoRefresh = 1;
 lastEntryId = -1;
-script_version = "v0.8"
+script_version = "v1.0"
 
 //https://www.norwegiancreations.com/2015/10/tutorial-potentiometers-with-arduino-and-filtering/
 EMA_a = 0.15;      //between 0 and 1, lower the number, higher the samples used for averaging, i.e. slower averaging
@@ -153,7 +153,7 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
       dataType: 'json',
     }).done(function (results) {
 			  
-		  EMA_S = 0;       
+		  EMA_S = -1;       
 	  
 		  yMin = 99999999;
 		  yMax = -999999;
@@ -170,7 +170,12 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
 			
 			if (emaMode){
 				//https://www.norwegiancreations.com/2015/10/tutorial-potentiometers-with-arduino-and-filtering/
-				EMA_S = (EMA_a * val.y) + ((1 - EMA_a) * EMA_S); 
+				if (EMA_S == -1)
+					EMA_S = val.y;  //first time value
+				else		
+					EMA_S = (EMA_a * val.y) + ((1 - EMA_a) * EMA_S); 
+				
+				
 				//val.y = Math.round(EMA_S); 
 				val.y = Math.round(EMA_S * 10) / 10;  ///round to 1 decimal places
 			}
