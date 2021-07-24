@@ -10,158 +10,29 @@
 </style>
 
 <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--script src="https://cdn.jsdelivr.net/npm/chart.js"></script-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.js"></script>
 
 <script>
 
 lastSamples= 200;
 enableAutoRefresh = 1;
- 
-//======Global chart options ===========================================================================================
- 
-Chart.defaults.global = {
-  // Boolean - Whether to animate the chart
-  animation: false,
-
-  // Number - Number of animation steps
-  animationSteps: 60,
-
-  // String - Animation easing effect
-  // Possible effects are:
-  // [easeInOutQuart, linear, easeOutBounce, easeInBack, easeInOutQuad,
-  //  easeOutQuart, easeOutQuad, easeInOutBounce, easeOutSine, easeInOutCubic,
-  //  easeInExpo, easeInOutBack, easeInCirc, easeInOutElastic, easeOutBack,
-  //  easeInQuad, easeInOutExpo, easeInQuart, easeOutQuint, easeInOutCirc,
-  //  easeInSine, easeOutExpo, easeOutCirc, easeOutCubic, easeInQuint,
-  //  easeInElastic, easeInOutSine, easeInOutQuint, easeInBounce,
-  //  easeOutElastic, easeInCubic]
-  animationEasing: "easeInBounce",
-
-  // Boolean - If we should show the scale at all
-  showScale: true,
-
-  // Boolean - If we want to override with a hard coded scale
-  scaleOverride: false,
-
-  // ** Required if scaleOverride is true **
-  // Number - The number of steps in a hard coded scale
-  scaleSteps: null,
-  // Number - The value jump in the hard coded scale
-  scaleStepWidth: null,
-  // Number - The scale starting value
-  scaleStartValue: null,
-
-  // String - Colour of the scale line
-  scaleLineColor: "rgba(0,0,0,.1)",
-
-  // Number - Pixel width of the scale line
-  scaleLineWidth: 1,
-
-  // Boolean - Whether to show labels on the scale
-  scaleShowLabels: true,
-
-  // Interpolated JS string - can access value
-  scaleLabel: "<%=value%>",
-
-  // Boolean - Whether the scale should stick to integers, not floats even if drawing space is there
-  scaleIntegersOnly: true,
-
-  // Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
-  scaleBeginAtZero: false,
-
-  // String - Scale label font declaration for the scale label
-  scaleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-
-  // Number - Scale label font size in pixels
-  scaleFontSize: 12,
-
-  // String - Scale label font weight style
-  scaleFontStyle: "normal",
-
-  // String - Scale label font colour
-  scaleFontColor: "#666",
-
-  // Boolean - whether or not the chart should be responsive and resize when the browser does.
-  responsive: true,
-
-  // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
-  maintainAspectRatio: true,
-
-  // Boolean - Determines whether to draw tooltips on the canvas or not
-  showTooltips: true,
-
-  // Function - Determines whether to execute the customTooltips function instead of drawing the built in tooltips (See [Advanced - External Tooltips](#advanced-usage-external-tooltips))
-  customTooltips: false,
-
-  // Array - Array of string names to attach tooltip events
-  tooltipEvents: ["mousemove", "touchstart", "touchmove"],
-
-  // String - Tooltip background colour
-  tooltipFillColor: "rgba(0,0,0,0.8)",
-
-  // String - Tooltip label font declaration for the scale label
-  tooltipFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-
-  // Number - Tooltip label font size in pixels
-  tooltipFontSize: 14,
-
-  // String - Tooltip font weight style
-  tooltipFontStyle: "normal",
-
-  // String - Tooltip label font colour
-  tooltipFontColor: "#fff",
-
-  // String - Tooltip title font declaration for the scale label
-  tooltipTitleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-
-  // Number - Tooltip title font size in pixels
-  tooltipTitleFontSize: 8,
-
-  // String - Tooltip title font weight style
-  tooltipTitleFontStyle: "bold",
-
-  // String - Tooltip title font colour
-  tooltipTitleFontColor: "#fff",
-
-  // String - Tooltip title template
-  tooltipTitleTemplate: "<%= label%>",
-
-  // Number - pixel width of padding around tooltip text
-  tooltipYPadding: 6,
-
-  // Number - pixel width of padding around tooltip text
-  tooltipXPadding: 6,
-
-  // Number - Size of the caret on the tooltip
-  tooltipCaretSize: 8,
-
-  // Number - Pixel radius of the tooltip border
-  tooltipCornerRadius: 6,
-
-  // Number - Pixel offset from point x to tooltip edge
-  tooltipXOffset: 10,
-  
-  // String - Template string for single tooltips
-  tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value %>",
-  
-  // String - Template string for multiple tooltips
-  multiTooltipTemplate: "<%= value %>",
-
-  // Function - Will fire on animation progression.
-  onAnimationProgress: function(){},
-
-  // Function - Will fire on animation completion.
-  onAnimationComplete: function(){}
-}
-
-
-//==================================================================================================
 
  // Add a helper to format timestamp data
 Date.prototype.formatMMDDYYYY = function() {
 	return (this.getMonth() + 1) +
 	"/" +  this.getDate() +
 	"/" +  this.getFullYear() ;
+}
+
+Date.prototype.formatMMDDYYYYHHMMSS = function() {
+	return pad((this.getMonth() + 1),2) +
+	"/" +  pad(this.getDate(),2) +
+	"/" +  pad(this.getFullYear(),4) +
+	" " +  pad(this.getHours(),2)  +
+	":" +  pad(this.getMinutes(),2) +
+	":" +  pad(this.getSeconds(),2)
+	;
 }
 
 Date.prototype.formatHHMM = function() {
@@ -202,29 +73,17 @@ chartObjects = {};
       // Split timestamp and data into separate arrays
       var labels = [], data=[];
       results["feeds"].forEach(function(packet) {
-        labels.push(new Date(packet.created_at).formatHHMM());
+        //labels.push(new Date(packet.created_at).formatHHMM());
 		//labels.push(new Date(packet.created_at));
-        data.push(parseFloat(packet["field"  + fieldNumber]));
+        //data.push(parseFloat(packet["field"  + fieldNumber]));
+		
+		val = { x:null, y:null};
+		val.x = new Date(packet.created_at).formatMMDDYYYYHHMMSS();
+		val.y = parseFloat(packet["field"  + fieldNumber]);
+		data.push (val);		
       });
-
-      // Create the chart.js data structure using 'labels' and 'data'
-      var tempData = {
-        labels : labels,
-        datasets : [{
-			label: chartLabel,
-			
-			fill: false,
-			borderColor: lineColor,
-			borderDash: [3, 3],
-			backgroundColor: pointColor,
-			pointBackgroundColor: pointColor,
-			pointBorderColor: pointColor,
-			pointHoverBackgroundColor: pointColor,
-			pointHoverBorderColor: pointColor,
-			
-            data                  : data
-        }]
-      };
+  
+   
 
       // Get the context of the canvas element we want to select
       var ctx = document.getElementById(canvasId).getContext("2d");
@@ -235,12 +94,53 @@ chartObjects = {};
 		chartObjects[chartLabel].destroy();
 	  }
 	  
-	chartObjects[chartLabel] =  new Chart(ctx, {
-		 //bezierCurve: false,
-		 type: 'line',
-		 data: tempData,
-		 options: Chart.defaults.global
-	  });
+	  //var timeFormat = 'DD/MM/YYYY';
+	  var timeFormat = 'MM/DD/YYYY HH:mm:SS';
+	  
+	  var config = {
+        type:    'line',
+        data:    {
+            datasets: [
+                {
+                    label: chartLabel,                    
+					data: data,
+                    fill: false,
+                    borderColor: lineColor,
+					borderDash: [3, 3],
+					backgroundColor: pointColor,
+					pointBackgroundColor: pointColor,
+					pointBorderColor: pointColor,
+					pointHoverBackgroundColor: pointColor,
+					pointHoverBorderColor: pointColor,
+                }            
+			]
+        },
+        options: {
+            responsive: true,
+            title:      {
+                display: true,
+                text:    chartLabel
+            },
+			legend: {
+				display: false
+			},
+            scales:     {
+                xAxes: [{
+                    type:       "time",
+                    time:       {
+                        format: timeFormat,
+                        tooltipFormat: 'll'
+                    }
+                }],
+                yAxes: [{
+                    
+                }]
+            }
+        }
+    };
+
+	  
+	chartObjects[chartLabel] =  new Chart(ctx, config);
 
       
     });
@@ -267,6 +167,7 @@ chartObjects = {};
 	
 	function redirect(samples){
 		window.location.replace('https://mprashant04.github.io/arduino_water_tank_level_sensor_charts/main.html?samples=' + samples);
+		//window.location.replace('file:///C:/Users/e083356/Desktop/Temp/main.html?samples=' + samples);
 	}
 	
 	function disableRefresh(){
@@ -317,5 +218,4 @@ chartObjects = {};
     </div>
   </body>
 </html>
-
 
