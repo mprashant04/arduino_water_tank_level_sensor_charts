@@ -18,6 +18,7 @@
 lastSamples= 200;
 enableAutoRefresh = 1;
 lastEntryId = -1;
+script_version = "v0.1"
 
  // Add a helper to format timestamp data
 Date.prototype.formatMMDDYYYY = function() {
@@ -173,7 +174,7 @@ chartObjects = {};
 		drawLineChart("Level %", "2", "lineChartPercent", "#99cc00","#33cc00");
 		drawLineChart("Signal", "1", "lineChartSignal", "#0080ff","#6666ff");		
 		
-		document.getElementById('info').innerHTML = new Date().formatHHMMSS();
+		document.getElementById('info').innerHTML = new Date().formatHHMMSS() + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  (" + script_version + ")";
 		document.getElementById('infoSamples').innerHTML =  getParameterByName('samples');		
 	}
 	
@@ -229,8 +230,7 @@ chartObjects = {};
   </head>
   <body>
     <div id="container">
-      <div id="inner">
-	   <label">v0.1</label>
+      <div id="inner">	   
 	   <select  id="mySelect" onchange="redirect()">
 			<option>Samples</option>
 			<option>10</option>
@@ -255,8 +255,7 @@ chartObjects = {};
 	    
 	  <button onclick="disableRefresh()">Disable refresh</button>	  	  
 	  <label id="info"/></label>	  
-	  
-	  
+	  	  
 	  <canvas  id="lineChartSignal"  width="300" height="55"  style="border:1px solid black"></canvas>
 	  <canvas  id="lineChartPercent"  width="300" height="55"  style="border:1px solid black"></canvas>
 	  		
