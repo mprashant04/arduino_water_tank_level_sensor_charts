@@ -176,17 +176,25 @@ function pad(num, size) {
     while (num.length < size) num = "0" + num;
     return num;
 }
+function getParameterByName(name, url = window.location.href) {
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
 
 
 chartObjects = {};
 
 
 
-  function drawLineChart(chartLabel, fieldNumber, canvasId, samples, lineColor, pointColor) {
+  function drawLineChart(chartLabel, fieldNumber, canvasId,  lineColor, pointColor) {
 
    
     var jsonData = $.ajax({
-      url: 'https://api.thingspeak.com/channels/1440877/fields/' + fieldNumber + '.json?results=' + samples,
+      url: 'https://api.thingspeak.com/channels/1440877/fields/' + fieldNumber + '.json?results=' + getParameterByName('samples'),
       dataType: 'json',
     }).done(function (results) {
 
@@ -237,24 +245,39 @@ chartObjects = {};
     });
   }
 
-	function reloadCharts(samples){
-		lastSamples = samples;
-		//alert (samples);
-	  drawLineChart("Signal", "1", "lineChartSignal", samples, "#0080ff","#6666ff");
-	  drawLineChart("Level %", "2", "lineChartPercent", samples, "#99cc00","#33cc00");
-	  
-	  if (document.getElementById('info') != null){
-		document.getElementById('info').innerHTML = new Date().formatHHMMSS() + " (" + samples + ")";
-	  }
-	}
+	
 		
-	function refreshCharts(){
-		reloadCharts(lastSamples);
+	function displayCharts(){		
+		
+		drawLineChart("Signal", "1", "lineChartSignal", "#0080ff","#6666ff");
+		drawLineChart("Level %", "2", "lineChartPercent", "#99cc00","#33cc00");
+		
+		if (document.getElementById('info') != null){
+			document.getElementById('info').innerHTML = new Date().formatHHMMSS() + " (" + getParameterByName('samples') + ")";
+		}  		
+	}
+	
+	function reloadPage(){
+		window.location.reload();
+		//window.location = window.location;
+	}
+	
+	function redirect(samples){
+		window.location.replace('file:///C:/Users/Prashant/Desktop/temp/main.html?samples=' + samples);
 	}
   
-	refreshCharts();
 	
-	setInterval(refreshCharts, 5000);
+	
+	if (getParameterByName('samples') == null){
+		redirect (200);
+	}
+	
+	setInterval(reloadPage, 5000);
+	
+	window.onload = function() {
+		displayCharts();	
+	};
+	
  
 </script>
 
@@ -263,17 +286,16 @@ chartObjects = {};
     <div id="container">
       <div id="inner">
 	  
-	  <button onclick="reloadCharts(50)">50</button>
-	  <button onclick="reloadCharts(100)">100</button>
-	  <button onclick="reloadCharts(200)">200</button>
-	  <button onclick="reloadCharts(300)">300</button>
-	  <button onclick="reloadCharts(400)">400</button>
-	  <button onclick="reloadCharts(500)">500</button>
-	  <button onclick="reloadCharts(750)">750</button>
-	  <button onclick="reloadCharts(1000)">1000</button>
-	  <button onclick="reloadCharts(1500)">1500</button>
-	  <button onclick="reloadCharts(2000)">2000</button>
-	  <button onclick="refreshCharts()">refresh</button>
+	  <button onclick="redirect(50)">50</button>
+	  <button onclick="redirect(100)">100</button>
+	  <button onclick="redirect(200)">200</button>
+	  <button onclick="redirect(300)">300</button>
+	  <button onclick="redirect(400)">400</button>
+	  <button onclick="redirect(500)">500</button>
+	  <button onclick="redirect(750)">750</button>
+	  <button onclick="redirect(1000)">1000</button>
+	  <button onclick="redirect(1500)">1500</button>
+	  <button onclick="redirect(2000)">2000</button>	  
 	  <label id="info"/>   </label>
 	  
 	  
@@ -287,3 +309,4 @@ chartObjects = {};
 
 
 
+{"mode":"full","isActive":false}
