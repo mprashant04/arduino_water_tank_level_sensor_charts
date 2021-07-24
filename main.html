@@ -124,40 +124,49 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data){
 
 
 
-  function drawLineChart(chartLabel, fieldNumber, canvasId,  lineColor, pointColor) {
+  function drawLineChart(chartLabel, fieldNumber, canvasId,  lineColor, pointColor, EMA_a) {
 
    
     var jsonData = $.ajax({
       url: 'https://api.thingspeak.com/channels/1440877/fields/' + fieldNumber + '.json?results=' + getParameterByName('samples'),
       dataType: 'json',
     }).done(function (results) {
+	
+		  emaMode = (EMA_a != undefined);
+		  EMA_S = 0;       
+	  
+		  var data=[];
+		  results["feeds"].forEach(function(packet) {        
+			
+			val = { x:null, y:null};
+			val.x = new Date(packet.created_at).formatMMDDYYYYHHMMSS();
+			val.y = parseFloat(packet["field"  + fieldNumber]);
+			
+			
+			if (emaMode){
+				//https://www.norwegiancreations.com/2015/10/tutorial-potentiometers-with-arduino-and-filtering/
+				EMA_S = (EMA_a * val.y) + ((1 - EMA_a) * EMA_S); 
+				val.y = EMA_S;
+			}
+			
+			data.push (val);
 
-      
-      var labels = [], data=[];
-      results["feeds"].forEach(function(packet) {        
-		
-		val = { x:null, y:null};
-		val.x = new Date(packet.created_at).formatMMDDYYYYHHMMSS();
-		val.y = parseFloat(packet["field"  + fieldNumber]);
-		data.push (val);
-
-		//console.log(val);
-      });
-  
+			//console.log(val);
+		  });
 	  
 
-
-      var ctx = document.getElementById(canvasId).getContext("2d");
-	  new Chart(ctx, buildChartConfig(chartLabel, lineColor, pointColor, data));
-      
-    });
-  }
+		  var ctx = document.getElementById(canvasId).getContext("2d");
+		  new Chart(ctx, buildChartConfig(chartLabel, lineColor, pointColor, data));
+		  
+		});
+}
 
 	
 		
 	function displayCharts(){						
-		drawLineChart("Level %", "2", "lineChartPercent", "#99cc00","#33cc00");
 		drawLineChart("Signal", "1", "lineChartSignal", "#0080ff","#6666ff");		
+		drawLineChart("Level %", "2", "lineChartPercent", "#99cc00","#33cc00");		
+		drawLineChart("Signal EMA", "1", "lineChartSignalEMA", "#0080ff","#6666ff", 0.7);		
 		
 		document.getElementById('info').innerHTML = new Date().formatHHMMSS() + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  (" + script_version + ")";
 		document.getElementById('infoSamples').innerHTML =  getParameterByName('samples');		
