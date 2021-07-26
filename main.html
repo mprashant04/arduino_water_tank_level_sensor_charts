@@ -10,7 +10,7 @@
 </style>
 
 <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.2/howler.core.min.js"></script>
 
 <script>
@@ -18,7 +18,7 @@
 lastSamples= 200;
 enableAutoRefresh = 1;
 lastEntryId = -1;
-script_version = "v1.1"
+script_version = "v1.2"
 
 //https://www.norwegiancreations.com/2015/10/tutorial-potentiometers-with-arduino-and-filtering/
 EMA_a = 0.15;      //between 0 and 1, lower the number, higher the samples used for averaging, i.e. slower averaging
@@ -106,18 +106,30 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
                     time:       {
                         format: 'MM/DD/YYYY HH:mm:ss',
                         tooltipFormat: 'HH:mm:ss   (DD/MMM)',
+						unit: 'hour',
 						displayFormats: {
-						   'millisecond': 'HH:mm',
-						   'second': 'HH:mm',
-						   'minute': 'HH:mm',
-						   'hour': 'DD MMM HH:mm',
-						   'day': 'DD MMM HH:mm',
-						   'week': 'DD MMM HH:mm',
-						   'month': 'DD MMM HH:mm',
-						   'quarter': 'DD MMM HH:mm',
-						   'year': 'DD MMM HH:mm',
+						   //'millisecond': 'HH:mm',
+						   //'second': 'HH:mm',
+						   //'minute': 'HH:mm',
+						   'hour': 'HH:mm',    //used for minor time tick
+						   'day': 'DD MMM',		//used for major time tick
+						   //'week': 'DD MMM HH:mm',
+						   //'month': 'DD MMM HH:mm',
+						   //'quarter': 'DD MMM HH:mm',
+						   //'year': 'DD MMM HH:mm',
 						}
-                    }
+                    },
+					ticks: {
+						 //maxTicksLimit: 20,
+						 major: {
+						   enabled: true, 
+						   unit: 'day',
+						   //unitStepSize: 1,
+						   fontStyle: 'bold', 
+						   fontSize: 14, 
+						   fontColor: '#00264d',						   
+						},
+					}
                 }],
                 yAxes: [{
                     ticks: {						
