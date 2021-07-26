@@ -18,7 +18,7 @@
 lastSamples= 200;
 enableAutoRefresh = 1;
 lastEntryId = -1;
-script_version = "v1.2"
+script_version = "v1.3"
 
 //https://www.norwegiancreations.com/2015/10/tutorial-potentiometers-with-arduino-and-filtering/
 EMA_a = 0.15;      //between 0 and 1, lower the number, higher the samples used for averaging, i.e. slower averaging
@@ -104,8 +104,8 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
                 xAxes: [{
                     type:       "time",
                     time:       {
-                        format: 'MM/DD/YYYY HH:mm:ss',
-                        tooltipFormat: 'HH:mm:ss   (DD/MMM)',
+                        parser: 'MM/DD/YYYY HH:mm:ss',
+                        tooltipFormat: 'HH:mm:ss',
 						unit: 'hour',
 						displayFormats: {
 						   //'millisecond': 'HH:mm',
@@ -141,6 +141,8 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
                 }]
             },
 			tooltips: {
+				mode: 'x-axis',
+				displayColors: false,
 				callbacks: {
 					label: function(tooltipItem, data) {
 						return tooltipItem.yLabel ;
@@ -149,7 +151,7 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
 					//	return "";
 					//}
 				}
-			}
+			},			
         }
     }
 }
