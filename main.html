@@ -18,7 +18,7 @@
 lastSamples= 200;
 enableAutoRefresh = 1;
 lastEntryId = -1;
-script_version = "v1.6"
+script_version = "v1.7"
 
 //https://www.norwegiancreations.com/2015/10/tutorial-potentiometers-with-arduino-and-filtering/
 EMA_a = 0.15;      //between 0 and 1, lower the number, higher the samples used for averaging, i.e. slower averaging
@@ -221,7 +221,7 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
 		
 		drawLineChart("Uptime", 					"5", "lineChartUptime", 				"#00cccc","#006666");
 		drawLineChart("API Call Failures",			"6", "lineChartApiCallFailures", 		"#b366ff","#8000ff");
-		drawLineChart("Signal Threshold Jumps",		"7", "lineChartSignalThresholdJumps",	"#ff8566","#ff3300");
+		drawLineChart("Signal Threshold Jumps",		"7", "lineChartSignalThresholdJumpsSmall",	"#ff8566","#ff3300");
 		
 		
 		document.getElementById('info').innerHTML = new Date().formatHHMMSS() + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  (" + script_version + ")";
@@ -346,7 +346,8 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
 	  <canvas  id="lineChartPercent"  width="300" height="55"  style="border:1px solid black"></canvas>	  
 	  <canvas  id="lineChartPercentEMA"  width="300" height="55"  style="border:1px solid black"></canvas>	  
 	  <canvas  id="lineChartApiCallFailures"  width="300" height="55"  style="border:1px solid black"></canvas>	  
-	  <canvas  id="lineChartSignalThresholdJumps"  width="300" height="55"  style="border:1px solid black"></canvas>	  
+	  <canvas  id="lineChartSignalThresholdJumpsSmall"  width="300" height="55"  style="border:1px solid black"></canvas>	  
+	  <canvas  id="lineChartSignalThresholdJumpsBig"  width="300" height="55"  style="border:1px solid black"></canvas>	  
 	  <canvas  id="lineChartUptime"  width="300" height="55"  style="border:1px solid black"></canvas>	  
 	  		
 	 
