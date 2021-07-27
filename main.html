@@ -20,7 +20,7 @@ if (enableAutoRefresh != 1 && enableAutoRefresh != 0) enableAutoRefresh = 0;
 
 lastSamples= 200;
 lastEntryId = -1;
-script_version = "v1.9"
+script_version = "v2.0"
 
 //https://www.norwegiancreations.com/2015/10/tutorial-potentiometers-with-arduino-and-filtering/
 EMA_a = 0.15;      //between 0 and 1, lower the number, higher the samples used for averaging, i.e. slower averaging
@@ -104,7 +104,7 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
 			},
 			layout: {
 				padding: {
-					right: 15
+					right: 25
 				}
 			},
             scales:     {
