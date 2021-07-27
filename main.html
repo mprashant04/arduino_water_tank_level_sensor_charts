@@ -15,10 +15,12 @@
 
 <script>
 
+enableAutoRefresh =  getParameterByName('auto_refresh');
+if (enableAutoRefresh != 1 && enableAutoRefresh != 0) enableAutoRefresh = 0;
+
 lastSamples= 200;
-enableAutoRefresh = 0;
 lastEntryId = -1;
-script_version = "v1.8"
+script_version = "v1.9"
 
 //https://www.norwegiancreations.com/2015/10/tutorial-potentiometers-with-arduino-and-filtering/
 EMA_a = 0.15;      //between 0 and 1, lower the number, higher the samples used for averaging, i.e. slower averaging
@@ -236,11 +238,11 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
 			}).done(function (results) {
 
 			entryId = results["feeds"][0]["entry_id"];
-			if (lastEntryId > 0 && lastEntryId != entryId && enableAutoRefresh == 1){
+			if (lastEntryId > 0 && lastEntryId != entryId && enableAutoRefresh == 1){				
 				beep();				
 				window.location.reload();
 			}
-			else{
+			else{				
 				lastEntryId = entryId;
 			}
 		 });
@@ -250,16 +252,19 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
 		if (samples == undefined){
 			var sel = document.getElementById("mySelect");
 			samples = sel.options[sel.selectedIndex].text;			
-		}	
+		}
+		if (isNaN(samples))  samples = 200;
 
 		var path = location.protocol + '//' + location.host + location.pathname;
 		//alert (path);		
-		window.location.replace(path + '?samples=' + samples + "&time=" + new Date().formatMMDDYYYYHHMMSS ());
+		window.location.replace(path + '?samples=' + samples 
+									+ "&auto_refresh=" + enableAutoRefresh
+									+ "&time=" + new Date().formatMMDDYYYYHHMMSS ());
 	}
 	
-	function enableRefresh(){
-	      enableAutoRefresh = 1;	      
-	      document.getElementById("auto_refresh").style.display = "none";
+	function enableRefresh(enable){
+	      enableAutoRefresh = enable;	    
+		  redirect();  	      
 	}
   
 	
@@ -272,7 +277,12 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
 	
 	window.onload = function() {
 		displayCharts();	
-		reloadPageIfDataChanged();				
+		reloadPageIfDataChanged();	
+
+		if (enableAutoRefresh == 1)
+			document.getElementById("auto_refresh_off").style.display = "none";
+		else
+			document.getElementById("auto_refresh_on").style.display = "none";
 	};
 	
  
@@ -330,7 +340,10 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
 				</td>
 				<td style="text-align:right">
 					<div>		
-						<button id="auto_refresh" onclick="enableRefresh()">Auto refresh</button>	  	  
+						
+						<label id="auto_refresh_off" onclick="enableRefresh(1)"><font color="red" size="+1"  >&#128472;</font></label>	  													
+						<label id="auto_refresh_on"  onclick="enableRefresh(0)"><font color="green" size="+1">&#128472;</font></label>	  	  
+						
 						<label id="info"/></label>	  
 					</div>	
 				</td>
