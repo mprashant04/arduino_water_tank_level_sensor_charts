@@ -16,7 +16,7 @@
 <script>
 
 lastSamples= 200;
-enableAutoRefresh = 1;
+enableAutoRefresh = 0;
 lastEntryId = -1;
 script_version = "v1.8"
 
@@ -257,9 +257,9 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
 		window.location.replace(path + '?samples=' + samples + "&time=" + new Date().formatMMDDYYYYHHMMSS ());
 	}
 	
-	function disableRefresh(){
-	      enableAutoRefresh = 0;
-	      document.getElementById('info').innerHTML = "Disabled...";
+	function enableRefresh(){
+	      enableAutoRefresh = 1;	      
+	      document.getElementById("auto_refresh").style.display = "none";
 	}
   
 	
@@ -330,7 +330,7 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
 				</td>
 				<td style="text-align:right">
 					<div>		
-						<button onclick="disableRefresh()">Disable refresh</button>	  	  
+						<button id="auto_refresh" onclick="enableRefresh()">Auto refresh</button>	  	  
 						<label id="info"/></label>	  
 					</div>	
 				</td>
