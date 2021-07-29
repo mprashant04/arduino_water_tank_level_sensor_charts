@@ -20,7 +20,7 @@ if (enableAutoRefresh != 1 && enableAutoRefresh != 0) enableAutoRefresh = 0;
 
 lastSamples= 200;
 lastEntryId = -1;
-script_version = "v2.3"
+script_version = "v2.4"
 basicMode =  (getParameterByName('advanced_mode') != '1') ;
 
 //https://www.norwegiancreations.com/2015/10/tutorial-potentiometers-with-arduino-and-filtering/
@@ -170,7 +170,7 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 
 
 
-  function drawLineChart(chartLabel, fieldNumber, canvasId,  lineColor, pointColor, pointRadius, linewidth, elementIdLastEntryValue,elementIdLastEntryDate ) {
+  function drawLineChart(chartLabel, fieldNumber, canvasId,  lineColor, pointColor, pointRadius, linewidth, elementIdLastEntryValue,elementIdLastEntryDate, fixedYmin, fixedYmax) {
 
    
     var jsonData = $.ajax({
@@ -198,14 +198,18 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 
 			//console.log(val);
 		  });
-	  
+		  
+		  if (fixedYmin != undefined) yMin = fixedYmin;
+		  if (fixedYmax != undefined) yMax = fixedYmax;
+		  
+		  
 
 		  var ctx = document.getElementById(canvasId).getContext("2d");
 		  new Chart(ctx, buildChartConfig(chartLabel, lineColor, pointColor, data,yMin, yMax, pointRadius, linewidth));
 		  
-		  if (elementIdLastEntryValue)
+		  if (elementIdLastEntryValue != undefined)
 			document.getElementById(elementIdLastEntryValue).innerHTML =  data[data.length-1].y;		
-		  if (elementIdLastEntryDate)
+		  if (elementIdLastEntryDate != undefined)
 			document.getElementById(elementIdLastEntryDate).innerHTML =  data[data.length-1].x;		
 		  
 		  
@@ -216,7 +220,7 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 		
 	function displayCharts(){
 		if (basicMode){
-			drawLineChart("           ", 				"4", "lineChartPercentEMA_basic", 			"#ffffff","#804000", 2,0, "LevelPercentageValue_basic", "LevelPercentageDate_basic");		
+			drawLineChart("           ", 				"4", "lineChartPercentEMA_basic", 			"#ffffff","#804000", 2,0, "LevelPercentageValue_basic", "LevelPercentageDate_basic", 0, 120);		
 		}
 		else{
 			drawLineChart("Signal", 					"1", "lineChartSignal", 				"#0080ff","#6666ff", 2,1);				
