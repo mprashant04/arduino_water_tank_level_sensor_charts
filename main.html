@@ -20,7 +20,7 @@ if (enableAutoRefresh != 1 && enableAutoRefresh != 0) enableAutoRefresh = 0;
 
 lastSamples= 200;
 lastEntryId = -1;
-script_version = "v2.1"
+script_version = "v2.2"
 basicMode =  (getParameterByName('advanced_mode') != '1') ;
 
 //https://www.norwegiancreations.com/2015/10/tutorial-potentiometers-with-arduino-and-filtering/
@@ -325,15 +325,15 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 			}
 			.basic h1 {
 			  font-family: 'Raleway', sans-serif;
-			  font-weight: lighter;
-			  font-size: 80px;
+			  font-weight: bold;
+			  font-size: 100px;
 			  text-align: center;
 			  margin: 0
 			}
 			.basic  h2 {
 			  font-family: 'Raleway', sans-serif;
 			  font-weight: lighter;
-			  font-size: 20px;
+			  font-size: 40px;
 			  text-align: center;
 			  margin: 0
 			}
