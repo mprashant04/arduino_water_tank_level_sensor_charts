@@ -20,7 +20,8 @@ if (enableAutoRefresh != 1 && enableAutoRefresh != 0) enableAutoRefresh = 0;
 
 lastSamples= 200;
 lastEntryId = -1;
-script_version = "v2.0"
+script_version = "v2.1"
+basicMode =  (getParameterByName('advanced_mode') != '1') ;
 
 //https://www.norwegiancreations.com/2015/10/tutorial-potentiometers-with-arduino-and-filtering/
 EMA_a = 0.15;      //between 0 and 1, lower the number, higher the samples used for averaging, i.e. slower averaging
@@ -74,7 +75,7 @@ function beep() {
 	//});
 	//sound.play();
 };
-function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
+function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, pointRadius, linewidth){
 	  return {
         type:    'line',
         data:    {
@@ -85,11 +86,14 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
                     fill: false,
                     borderColor: lineColor,
 					borderDash: [3, 3],
+					borderWidth: linewidth,
 					backgroundColor: pointColor,
 					pointBackgroundColor: pointColor,
 					pointBorderColor: pointColor,
 					pointHoverBackgroundColor: pointColor,
 					pointHoverBorderColor: pointColor,
+					pointRadius: pointRadius,					
+					pointHitRadius: pointRadius,					
                 }            
 			]
         },
@@ -166,7 +170,7 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
 
 
 
-  function drawLineChart(chartLabel, fieldNumber, canvasId,  lineColor, pointColor, emaMode) {
+  function drawLineChart(chartLabel, fieldNumber, canvasId,  lineColor, pointColor, pointRadius, linewidth, elementIdLastEntryValue,elementIdLastEntryDate ) {
 
    
     var jsonData = $.ajax({
@@ -188,18 +192,7 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
 			
 			if (yMin > val.y)  yMin = val.y;
 			if (yMax < val.y)  yMax = val.y;			
-			
-			if (emaMode){
-				//https://www.norwegiancreations.com/2015/10/tutorial-potentiometers-with-arduino-and-filtering/
-				if (EMA_S == -1)
-					EMA_S = val.y;  //first time value
-				else		
-					EMA_S = (EMA_a * val.y) + ((1 - EMA_a) * EMA_S); 
-				
-				
-				//val.y = Math.round(EMA_S); 
-				val.y = Math.round(EMA_S * 10) / 10;  ///round to 1 decimal places
-			}
+					
 			
 			data.push (val);
 
@@ -208,27 +201,38 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
 	  
 
 		  var ctx = document.getElementById(canvasId).getContext("2d");
-		  new Chart(ctx, buildChartConfig(chartLabel, lineColor, pointColor, data,yMin, yMax));
+		  new Chart(ctx, buildChartConfig(chartLabel, lineColor, pointColor, data,yMin, yMax, pointRadius, linewidth));
+		  
+		  if (elementIdLastEntryValue)
+			document.getElementById(elementIdLastEntryValue).innerHTML =  data[data.length-1].y;		
+		  if (elementIdLastEntryDate)
+			document.getElementById(elementIdLastEntryDate).innerHTML =  data[data.length-1].x;		
+		  
 		  
 		});
 }
 
 	
 		
-	function displayCharts(){						
-		drawLineChart("Signal", 					"1", "lineChartSignal", 				"#0080ff","#6666ff");				
-		drawLineChart("Signal EMA", 				"3", "lineChartSignalEMA", 				"#0080ff","#6666ff");		
-		drawLineChart("Level %", 					"2", "lineChartPercent", 				"#99cc00","#33cc00");				
-		drawLineChart("Level % EMA", 				"4", "lineChartPercentEMA", 			"#99cc00","#33cc00");		
-		
-		drawLineChart("Uptime", 					"5", "lineChartUptime", 				"#00cccc","#006666");
-		drawLineChart("API Call Failures",			"6", "lineChartApiCallFailures", 		"#b366ff","#8000ff");
-		drawLineChart("Signal Threshold Jumps (Small)",		"7", "lineChartSignalThresholdJumpsSmall",	"#ff8566","#ff3300");
-		drawLineChart("Signal Threshold Jumps (Big)",		"8", "lineChartSignalThresholdJumpsBig",	"#ff8566","#ff3300");
-		
-		
-		document.getElementById('info').innerHTML = new Date().formatHHMMSS() + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  (" + script_version + ")";
-		document.getElementById('infoSamples').innerHTML =  getParameterByName('samples');		
+	function displayCharts(){
+		if (basicMode){
+			drawLineChart("           ", 				"4", "lineChartPercentEMA_basic", 			"#ffffff","#804000", 1,0, "LevelPercentageValue_basic", "LevelPercentageDate_basic");		
+		}
+		else{
+			drawLineChart("Signal", 					"1", "lineChartSignal", 				"#0080ff","#6666ff", 2,1);				
+			drawLineChart("Signal EMA", 				"3", "lineChartSignalEMA", 				"#0080ff","#6666ff", 2,1);		
+			drawLineChart("Level %", 					"2", "lineChartPercent", 				"#99cc00","#33cc00", 2,1);				
+			drawLineChart("Level % EMA", 				"4", "lineChartPercentEMA", 			"#99cc00","#33cc00", 2,1);		
+			
+			drawLineChart("Uptime", 					"5", "lineChartUptime", 				"#00cccc","#006666", 2,1);
+			drawLineChart("API Call Failures",			"6", "lineChartApiCallFailures", 		"#b366ff","#8000ff", 2,1);
+			drawLineChart("Signal Threshold Jumps (Small)",		"7", "lineChartSignalThresholdJumpsSmall",	"#ff8566","#ff3300", 2,1);
+			drawLineChart("Signal Threshold Jumps (Big)",		"8", "lineChartSignalThresholdJumpsBig",	"#ff8566","#ff3300", 2,1);
+			
+			
+			document.getElementById('info').innerHTML = new Date().formatHHMMSS() + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  (" + script_version + ")";
+			document.getElementById('infoSamples').innerHTML =  getParameterByName('samples');		
+		}
 	}
 	
 	function reloadPageIfDataChanged(){
@@ -252,13 +256,16 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
 		if (samples == undefined){
 			var sel = document.getElementById("mySelect");
 			samples = sel.options[sel.selectedIndex].text;			
+			
+			if (isNaN(samples))  samples = getParameterByName('samples');
 		}
 		if (isNaN(samples))  samples = 200;
 
 		var path = location.protocol + '//' + location.host + location.pathname;
 		//alert (path);		
-		window.location.replace(path + '?samples=' + samples 
-									+ "&auto_refresh=" + enableAutoRefresh
+		window.location.replace(path + '?samples=' + (basicMode ? 5000 : samples )
+									+ "&auto_refresh=" + (basicMode ? 1 : enableAutoRefresh )
+									+ "&advanced_mode=" + (basicMode ? "0" : "1")
 									+ "&time=" + new Date().formatMMDDYYYYHHMMSS ());
 	}
 	
@@ -273,9 +280,19 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
 		redirect (200);
 	}
 	
+	function changeToAdvancedMode(advanced){
+		basicMode = !advanced;
+		redirect();
+	}
+	
 	setInterval(reloadPageIfDataChanged, 3000);
 	
 	window.onload = function() {
+		if (basicMode)
+			document.getElementById("advanced_div").style.visibility = "hidden";
+		else
+			document.getElementById("basic_div").style.visibility = "hidden";
+		
 		displayCharts();	
 		reloadPageIfDataChanged();	
 
@@ -306,64 +323,89 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax){
 				right: -20px; /* Increase/Decrease this value for cross-browser compatibility */
 				overflow-y: scroll;
 			}
+			.basic h1 {
+			  font-family: 'Raleway', sans-serif;
+			  font-weight: lighter;
+			  font-size: 80px;
+			  text-align: center;
+			  margin: 0
+			}
+			.basic  h2 {
+			  font-family: 'Raleway', sans-serif;
+			  font-weight: lighter;
+			  font-size: 20px;
+			  text-align: center;
+			  margin: 0
+			}
     </style>
 	
   <body>
     <div id="container">
       <div id="inner">	
-
-		<table style=" width: 100%;">
-			<tr>
-				<td style="text-align:left">
-					<div align = "left">	
-						<select  id="mySelect" onchange="redirect()">
-								<option>Samples</option>
-								<option>10</option>
-								<option>50</option>
-								<option>100</option>
-								<option>200</option>
-								<option>300</option>
-								<option>400</option>
-								<option>500</option>
-								<option>750</option>
-								<option>1000</option>				
-								<option>2000</option>				
-								<option>3000</option>				
-								<option>4000</option>				
-								<option>5000</option>				
-								<option>7500</option>				
-								<option>10000</option>				
-								<option>15000</option>				
-						  </select>		  
-						  <label id="infoSamples"/></label>	  
-				  </div>	
-				</td>
-				<td style="text-align:right">
-					<div>		
-						
-						<label id="auto_refresh_off" onclick="enableRefresh(1)"><font color="red" size="+1"  >&#128472;</font></label>	  													
-						<label id="auto_refresh_on"  onclick="enableRefresh(0)"><font color="green" size="+1">&#128472;</font></label>	  	  
-						
-						<label id="info"/></label>	  
-					</div>	
-				</td>
-			</tr>
-		</table>  
-
 	  
-		
+		<div id="basic_div" class="basic">	
+			<h1 id="LevelPercentageValue_basic"></h1>
+			<h2 id="LevelPercentageDate_basic"></h2>      								
 			
+			<br>			
+			<canvas  id="lineChartPercentEMA_basic"  width="300" height="120"  style="border:1px solid black"></canvas>	  
+			<label onclick="changeToAdvancedMode(true)"> .. </label>
+		</div>
 		
-	  	  
-	  <canvas  id="lineChartSignal"  width="300" height="55"  style="border:1px solid black"></canvas>
-	  <canvas  id="lineChartSignalEMA"  width="300" height="55"  style="border:1px solid black"></canvas>
-	  <canvas  id="lineChartPercent"  width="300" height="55"  style="border:1px solid black"></canvas>	  
-	  <canvas  id="lineChartPercentEMA"  width="300" height="55"  style="border:1px solid black"></canvas>	  
-	  <canvas  id="lineChartApiCallFailures"  width="300" height="55"  style="border:1px solid black"></canvas>	  
-	  <canvas  id="lineChartSignalThresholdJumpsSmall"  width="300" height="55"  style="border:1px solid black"></canvas>	  
-	  <canvas  id="lineChartSignalThresholdJumpsBig"  width="300" height="55"  style="border:1px solid black"></canvas>	  
-	  <canvas  id="lineChartUptime"  width="300" height="55"  style="border:1px solid black"></canvas>	  
-	  		
+		<div id="advanced_div">			
+			<button onclick="changeToAdvancedMode(false)"> basic </button>
+				
+
+				<table style=" width: 100%;">
+					<tr>
+						<td style="text-align:left">
+							<div align = "left">	
+								<select  id="mySelect" onchange="redirect()">
+										<option>Samples</option>
+										<option>10</option>
+										<option>50</option>
+										<option>100</option>
+										<option>200</option>
+										<option>300</option>
+										<option>400</option>
+										<option>500</option>
+										<option>750</option>
+										<option>1000</option>				
+										<option>2000</option>				
+										<option>3000</option>				
+										<option>4000</option>				
+										<option>5000</option>				
+										<option>7500</option>				
+										<option>10000</option>				
+										<option>15000</option>				
+								  </select>		  
+								  <label id="infoSamples"/></label>	  
+						  </div>	
+						</td>
+						<td style="text-align:right">
+							<div>		
+								
+								<label id="auto_refresh_off" onclick="enableRefresh(1)"><font color="red" size="+1"  >&#128472;</font></label>	  													
+								<label id="auto_refresh_on"  onclick="enableRefresh(0)"><font color="green" size="+1">&#128472;</font></label>	  	  
+								
+								<label id="info"/></label>	  
+							</div>	
+						</td>
+					</tr>
+				</table>  	  
+				
+					
+				
+			  
+			  <canvas  id="lineChartSignal"  width="300" height="55"  style="border:1px solid black"></canvas>
+			  <canvas  id="lineChartSignalEMA"  width="300" height="55"  style="border:1px solid black"></canvas>
+			  <canvas  id="lineChartPercent"  width="300" height="55"  style="border:1px solid black"></canvas>	  
+			  <canvas  id="lineChartPercentEMA"  width="300" height="55"  style="border:1px solid black"></canvas>	  
+			  <canvas  id="lineChartApiCallFailures"  width="300" height="55"  style="border:1px solid black"></canvas>	  
+			  <canvas  id="lineChartSignalThresholdJumpsSmall"  width="300" height="55"  style="border:1px solid black"></canvas>	  
+			  <canvas  id="lineChartSignalThresholdJumpsBig"  width="300" height="55"  style="border:1px solid black"></canvas>	  
+			  <canvas  id="lineChartUptime"  width="300" height="55"  style="border:1px solid black"></canvas>	  
+		</div>			
 	 
       </div>
 	</div>
