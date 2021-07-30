@@ -221,6 +221,7 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 	function displayCharts(){
 		if (basicMode){
 			drawLineChart("           ", 				"4", "lineChartPercentEMA_basic", 			"#ffffff","#804000", 1,0, "LevelPercentageValue_basic", "LevelPercentageDate_basic", 0, 102);		
+			document.getElementById('basic_ver').innerHTML = "(" + script_version + ")";
 		}
 		else{
 			drawLineChart("Signal", 					"1", "lineChartSignal", 				"#0080ff","#6666ff", 2,1);				
@@ -357,7 +358,7 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 			
 			<br>			
 			<canvas  id="lineChartPercentEMA_basic"  width="300" height="150"></canvas>	  
-			<label onclick="changeToAdvancedMode(true)"> .. </label>
+			<label onclick="changeToAdvancedMode(true)" id="basic_ver"> .. </label>
 		</div>
 		
 		<div id="advanced_div">			
