@@ -191,6 +191,7 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 	  
 		  yMin = 99999999;
 		  yMax = -999999;
+		  lastY = 0;
 		  
 		  var data=[];
 		  results["feeds"].forEach(function(packet) {
@@ -198,6 +199,8 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 			val = { x:null, y:null};
 			val.x = new Date(packet.created_at).formatMMDDYYYYHHMMSS();
 			val.y = parseFloat(packet["field"  + fieldNumber]);
+			
+			lastY = val.y;
 			
 			if (yMin > val.y)  yMin = val.y;
 			if (yMax < val.y)  yMax = val.y;			
@@ -214,7 +217,7 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 		  
 
 		  var ctx = document.getElementById(canvasId).getContext("2d");
-		  new Chart(ctx, buildChartConfig(chartLabel, lineColor, pointColor, data,yMin, yMax, pointRadius, linewidth));
+		  new Chart(ctx, buildChartConfig(chartLabel + " (" + lastY + ")", lineColor, pointColor, data,yMin, yMax, pointRadius, linewidth));
 		  
 		  if (elementIdLastEntryValue != undefined)
 			document.getElementById(elementIdLastEntryValue).innerHTML =  data[data.length-1].y + (elementIdLastEntryValueSuffix == undefined ? "" : elementIdLastEntryValueSuffix);		
