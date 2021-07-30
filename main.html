@@ -296,7 +296,7 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 	function changeToAdvancedMode(advanced, days){
 		basicMode = !advanced;
 		if (basicMode)
-		    redirect(0, (days > 0 ? days : 2));
+		    redirect(0, (days > 0 ? days : 1));
 		else
 		    redirect(500);
 	}
