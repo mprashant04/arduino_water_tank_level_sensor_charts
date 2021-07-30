@@ -20,7 +20,7 @@ if (enableAutoRefresh != 1 && enableAutoRefresh != 0) enableAutoRefresh = 0;
 
 lastSamples= 200;
 lastEntryId = -1;
-script_version = "v2.6"
+script_version = "v2.7"
 basicMode =  (getParameterByName('advanced_mode') != '1') ;
 
 //https://www.norwegiancreations.com/2015/10/tutorial-potentiometers-with-arduino-and-filtering/
@@ -407,7 +407,7 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 						<button id="basic_btn_6" class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,6)"> 6 </button>						
 						<button id="basic_btn_7" class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,7)"> 7 </button>						
 					</td>
-					<td style="text-align:right">
+					<td style="text-align:center">
 						<label onclick="changeToAdvancedMode(true)" id="basic_ver" class="hand_cursor" ></label>
 					</td>
 				</tr>
