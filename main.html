@@ -20,7 +20,7 @@ if (enableAutoRefresh != 1 && enableAutoRefresh != 0) enableAutoRefresh = 0;
 
 lastSamples= 200;
 lastEntryId = -1;
-script_version = "v2.9"
+script_version = "v1.0"
 basicMode =  (getParameterByName('advanced_mode') != '1') ;
 
 //https://www.norwegiancreations.com/2015/10/tutorial-potentiometers-with-arduino-and-filtering/
@@ -177,7 +177,12 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
     var jsonData = $.ajax({
       url: 'https://api.thingspeak.com/channels/1440877/fields/' + fieldNumber + '.json?' + 
 	                         (getParameterByName('days') > 0 ?   
-							         'days=' + getParameterByName('days') : 
+									 (
+									        getParameterByName('days') < 1	 ?  
+											'minutes=' + getParameterByName('days') * 24 * 60.0  :
+											'days=' + getParameterByName('days') 
+									 )
+									 : 
 									 'results=' + getParameterByName('samples')),	  
       dataType: 'json',
     }).done(function (results) {
@@ -407,14 +412,14 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 					<td style="text-align:left">					
 					</td>
 					<td style="text-align:center">
-						<label>Days </label>
-						<button id="basic_btn_1" class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,1)"> 1 </button>
-						<button id="basic_btn_2" class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,2)"> 2 </button>						
-						<button id="basic_btn_3" class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,3)"> 3 </button>						
-						<button id="basic_btn_4" class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,4)"> 4 </button>						
-						<button id="basic_btn_5" class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,5)"> 5 </button>						
-						<button id="basic_btn_6" class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,6)"> 6 </button>						
-						<button id="basic_btn_7" class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,7)"> 7 </button>						
+						<label>Days </label>												
+						<button id="basic_btn_0.5" class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,0.5)"> 1/2 </button>
+						<button id="basic_btn_1"   class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,1)">     1 </button>
+						<button id="basic_btn_2"   class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,2)">     2 </button>						
+						<button id="basic_btn_3"   class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,3)">     3 </button>						
+						<button id="basic_btn_4"   class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,4)">     4 </button>						
+						<button id="basic_btn_5"   class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,5)">     5 </button>						
+						<button id="basic_btn_6"   class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,6)">     6 </button>												
 					</td>
 					<td style="text-align:left">
 						<label onclick="changeToAdvancedMode(true)" id="basic_ver" class="hand_cursor" ></label>
