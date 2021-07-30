@@ -217,7 +217,7 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 		  
 
 		  var ctx = document.getElementById(canvasId).getContext("2d");
-		  new Chart(ctx, buildChartConfig(chartLabel + " (" + lastY + ")", lineColor, pointColor, data,yMin, yMax, pointRadius, linewidth));
+		  new Chart(ctx, buildChartConfig(chartLabel + "   (" + lastY + ")", lineColor, pointColor, data,yMin, yMax, pointRadius, linewidth));
 		  
 		  if (elementIdLastEntryValue != undefined)
 			document.getElementById(elementIdLastEntryValue).innerHTML =  data[data.length-1].y + (elementIdLastEntryValueSuffix == undefined ? "" : elementIdLastEntryValueSuffix);		
