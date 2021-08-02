@@ -263,6 +263,10 @@ function fetchLatestData(callbackFunction) {
 			
 			document.getElementById('basic_ver').innerHTML = "(" + script_version + ")";
 			document.getElementById('basic_btn_' + getParameterByName('days')).classList.add("button_highlight");
+			document.getElementById('basic_btn_' + getParameterByName('days')).classList.add("button_highlight");
+			if (enableAutoRefresh == 1 ) document.getElementById('basic_btn_auto_refresh').classList.add("button_highlight");
+			
+			
 		}
 		else{
 			drawLineChart("Signal", 					"1", 0, "lineChartSignal", 				"#0080ff","#6666ff", 2,1);				
@@ -324,7 +328,7 @@ function fetchLatestData(callbackFunction) {
 		//alert (path);		
 		window.location.replace(path + '?samples=' + samples
 									+ "&days=" + (days > 0 ? days : 0 )
-									+ "&auto_refresh=" + (basicMode ? 0 : enableAutoRefresh )
+									+ "&auto_refresh=" +  enableAutoRefresh 
 									+ "&advanced_mode=" + (basicMode ? "0" : "1")
 									+ "&time=" + new Date().formatMMDDYYYYHHMMSS ());
 	}
@@ -332,6 +336,11 @@ function fetchLatestData(callbackFunction) {
 	function enableRefresh(enable){
 	      enableAutoRefresh = enable;	    
 		  redirect();  	      
+	}
+	
+	function toggleAutoRefresh(){
+	      enableAutoRefresh = enableAutoRefresh == 1 ? 0 : 1;
+		  redirect(getParameterByName('samples'), getParameterByName('days'));
 	}
   
 	
@@ -464,9 +473,9 @@ function fetchLatestData(callbackFunction) {
 						<button id="basic_btn_1"   		class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,1)">     	1d </button>
 						<button id="basic_btn_2"   		class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,2)">     	2d </button>						
 						<button id="basic_btn_3"   		class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,3)">     	3d </button>						
-						<!--button id="basic_btn_4"   class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,4)">     4 </button>						
-						<button id="basic_btn_5"   class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,5)">     5 </button>						
-						<button id="basic_btn_6"   class="button_normal hand_cursor" onclick="changeToAdvancedMode(false,6)">     6 </button-->												
+						
+						<button id="basic_btn_auto_refresh" class="button_normal hand_cursor" onclick="toggleAutoRefresh()"> &#128472; </button>						
+						
 					</td>
 					<td style="text-align:left">
 						<label onclick="changeToAdvancedMode(true)" id="basic_ver" class="hand_cursor" ></label>
