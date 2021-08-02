@@ -20,8 +20,10 @@ if (enableAutoRefresh != 1 && enableAutoRefresh != 0) enableAutoRefresh = 0;
 
 lastSamples= 200;
 lastEntryId = -1;
-script_version = "v1.1"
+script_version = "v1.2"
 basicMode =  (getParameterByName('advanced_mode') != '1') ;
+lastY = undefined;
+lastX = undefined;
 
 //https://www.norwegiancreations.com/2015/10/tutorial-potentiometers-with-arduino-and-filtering/
 EMA_a = 0.15;      //between 0 and 1, lower the number, higher the samples used for averaging, i.e. slower averaging
@@ -171,7 +173,7 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 
 
 
-  function drawLineChart(chartLabel, fieldNumber, days, canvasId,  lineColor, pointColor, pointRadius, linewidth, elementIdLastEntryValue, elementIdLastEntryDate, elementIdLastEntryValueSuffix, fixedYmin, fixedYmax) {
+  function drawLineChart(chartLabel, fieldNumber, days, canvasId,  lineColor, pointColor, pointRadius, linewidth, fixedYmin, fixedYmax, callbackFunction) {
 
    
     var jsonData = $.ajax({
@@ -191,7 +193,7 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 	  
 		  yMin = 99999999;
 		  yMax = -999999;
-		  lastY = 0;
+		  
 		  
 		  var data=[];
 		  results["feeds"].forEach(function(packet) {
@@ -200,7 +202,6 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 			val.x = new Date(packet.created_at).formatMMDDYYYYHHMMSS();
 			val.y = parseFloat(packet["field"  + fieldNumber]);
 			
-			lastY = val.y;
 			
 			if (yMin > val.y)  yMin = val.y;
 			if (yMax < val.y)  yMax = val.y;			
@@ -214,17 +215,15 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 		  if (fixedYmin != undefined) yMin = fixedYmin;
 		  if (fixedYmax != undefined) yMax = fixedYmax;
 		  
-		  
+		  lastY = data[data.length-1].y;
+		  lastX = data[data.length-1].x;
 
 		  var ctx = document.getElementById(canvasId).getContext("2d");
 		  new Chart(ctx, buildChartConfig(chartLabel + (chartLabel.trim().length > 0  ? "     (" + lastY + ")" : ""), 
 						  lineColor, pointColor, data,yMin, yMax, pointRadius, linewidth));
-		  
-		  if (elementIdLastEntryValue != undefined)
-			document.getElementById(elementIdLastEntryValue).innerHTML =  data[data.length-1].y + (elementIdLastEntryValueSuffix == undefined ? "" : elementIdLastEntryValueSuffix);		
-		  if (elementIdLastEntryDate != undefined)
-			document.getElementById(elementIdLastEntryDate).innerHTML =  data[data.length-1].x;		
-		  
+						  
+		   if (callbackFunction != undefined)  callbackFunction();
+				
 		  
 		});
 }
@@ -234,9 +233,9 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 	function displayCharts(){
 		if (basicMode){
 			drawLineChart("           ", 				"4", 2, "lineChartPercentEMA_basic", 			
-									"#ffffff","#3333ff", 1,0, 
-									"LevelPercentageValue_basic", "LevelPercentageDate_basic", "%" , 
-									0, 102);		
+									"#ffffff","#3333ff", 1,0, 0, 102, updateBasicValues);	
+									
+			
 			document.getElementById('basic_ver').innerHTML = "(" + script_version + ")";
 			document.getElementById('basic_btn_' + getParameterByName('days')).classList.add("button_highlight");
 		}
@@ -255,6 +254,11 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 			document.getElementById('info').innerHTML = new Date().formatHHMMSS() + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  (" + script_version + ")";
 			document.getElementById('infoSamples').innerHTML =  getParameterByName('samples');		
 		}
+	}
+	
+	function updateBasicValues(){
+			document.getElementById('LevelPercentageValue_basic').innerHTML = lastY;
+			document.getElementById('LevelPercentageDate_basic').innerHTML = lastX;
 	}
 	
 	function reloadPageIfDataChanged(){
