@@ -23,6 +23,13 @@ lastEntryId = -1;
 script_version = "v1.2"
 basicMode =  (getParameterByName('advanced_mode') != '1') ;
 
+latest_date = undefined;			
+latest_levelEma = undefined;
+latest_signalEma = undefined;		  		  
+latest_level = undefined;
+latest_signal = undefined;		
+
+
 //https://www.norwegiancreations.com/2015/10/tutorial-potentiometers-with-arduino-and-filtering/
 EMA_a = 0.15;      //between 0 and 1, lower the number, higher the samples used for averaging, i.e. slower averaging
 
@@ -169,30 +176,27 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 }
 
 
+
+
+		  
 function fetchLatestData(callbackFunction) {
 
    
     var jsonData = $.ajax({
       url: 'https://api.thingspeak.com/channels/1440877/feeds.json?results=1',	  
       dataType: 'json',
-    }).done(function (results) {
-			
-		  date = undefined;			
-		  levelEma = undefined;
-		  signalEma = undefined;		  		  
-		  level = undefined;
-		  signal = undefined;		  		  
+    }).done(function (results) {					    		  
 		  
 		  results["feeds"].forEach(function(packet) {						
-			date = new Date(packet.created_at).formatMMDDYYYYHHMMSS();
-			levelEma = parseFloat(packet["field4"]);
-			signalEma = parseFloat(packet["field3"]);			
-			level = parseFloat(packet["field2"]);
-			signal = parseFloat(packet["field1"]);			
+			latest_date = new Date(packet.created_at).formatMMDDYYYYHHMMSS();
+			latest_levelEma = parseFloat(packet["field4"]);
+			latest_signalEma = parseFloat(packet["field3"]);			
+			latest_level = parseFloat(packet["field2"]);
+			latest_signal = parseFloat(packet["field1"]);			
 		  });		  		  
 						  
-		  callbackFunction(date, level, signal, levelEma, signalEma);						  
-		});
+		  callbackFunction();						  
+	});
 }
 
 
@@ -257,16 +261,12 @@ function fetchLatestData(callbackFunction) {
 		
 	function displayCharts(){
 		if (basicMode){
-			fetchLatestData(updateBasicValues)
-			drawLineChart("", "4", 2, "lineChartPercentEMA_basic", "#ffffff","#3333ff", 1,0, 0, 102);
-									
-			
+			fetchLatestData(refreshBasicModeElements)
+			drawLineChart("", "4", 2, "lineChartPercentEMA_basic", "#ffffff","#3333ff", 1,0, 0, 102);		
+		
 			document.getElementById('basic_ver').innerHTML = "(" + script_version + ")";
 			document.getElementById('basic_btn_' + getParameterByName('days')).classList.add("button_highlight");
-			document.getElementById('basic_btn_' + getParameterByName('days')).classList.add("button_highlight");
-			if (enableAutoRefresh == 1 ) document.getElementById('basic_btn_auto_refresh').classList.add("button_highlight_blue");
-			
-			
+			if (enableAutoRefresh == 1 ) document.getElementById('basic_btn_auto_refresh').classList.add("button_highlight_blue");			
 		}
 		else{
 			drawLineChart("Signal", 					"1", 0, "lineChartSignal", 				"#0080ff","#6666ff", 2,1);				
@@ -285,17 +285,17 @@ function fetchLatestData(callbackFunction) {
 		}
 	}
 	
-	function updateBasicValues(date, level, signal, levelEma, signalEma){
-			document.getElementById('LevelPercentageValue_basic').innerHTML = levelEma + "%";
-			document.getElementById('LevelPercentageDate_basic').innerHTML = date;
-			document.getElementById('basicSignal').innerHTML = "<br>" + level + "% / " + signal + " / " + signalEma ;
+	function refreshBasicModeElements(){						
+			const diffTimeSeconds = Math.abs(new Date() - new Date(latest_date)) / 1000;			
 			
-			const diffTimeSeconds = Math.abs(new Date() - new Date(date)) / 1000;			
+			document.getElementById('LevelPercentageValue_basic').innerHTML = latest_levelEma + "%";
+			document.getElementById('LevelPercentageDate_basic').innerHTML = latest_date;
+			document.getElementById('basicSignal').innerHTML = "<br>" + latest_level + "% / " + latest_signal + " / " + latest_signalEma ;
+			
+			
 			
 			if (diffTimeSeconds > 90)
 				document.getElementById("LevelPercentageDate_basic").classList.add("color_red");
-			
-			
 	}
 	
 	function reloadPageIfDataChanged(){
@@ -358,6 +358,7 @@ function fetchLatestData(callbackFunction) {
 	}
 	
 	setInterval(reloadPageIfDataChanged, 3000);
+	setInterval(refreshBasicModeElements, 1000);	
 	
 	window.onload = function() {
 		if (basicMode)
