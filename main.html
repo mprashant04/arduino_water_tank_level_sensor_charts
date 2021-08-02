@@ -22,8 +22,6 @@ lastSamples= 200;
 lastEntryId = -1;
 script_version = "v1.2"
 basicMode =  (getParameterByName('advanced_mode') != '1') ;
-lastY = undefined;
-lastX = undefined;
 
 //https://www.norwegiancreations.com/2015/10/tutorial-potentiometers-with-arduino-and-filtering/
 EMA_a = 0.15;      //between 0 and 1, lower the number, higher the samples used for averaging, i.e. slower averaging
@@ -171,9 +169,36 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 }
 
 
+function fetchLatestData(callbackFunction) {
+
+   
+    var jsonData = $.ajax({
+      url: 'https://api.thingspeak.com/channels/1440877/feeds.json?results=1',	  
+      dataType: 'json',
+    }).done(function (results) {
+			
+		  date = undefined;			
+		  levelEma = undefined;
+		  signalEma = undefined;		  		  
+		  level = undefined;
+		  signal = undefined;		  		  
+		  
+		  results["feeds"].forEach(function(packet) {						
+			date = new Date(packet.created_at).formatMMDDYYYYHHMMSS();
+			levelEma = parseFloat(packet["field4"]);
+			signalEma = parseFloat(packet["field3"]);			
+			level = parseFloat(packet["field2"]);
+			signal = parseFloat(packet["field1"]);			
+		  });		  		  
+						  
+		  callbackFunction(date, level, signal, levelEma, signalEma);						  
+		});
+}
 
 
-  function drawLineChart(chartLabel, fieldNumber, days, canvasId,  lineColor, pointColor, pointRadius, linewidth, fixedYmin, fixedYmax, callbackFunction) {
+
+
+  function drawLineChart(chartLabel, fieldNumber, days, canvasId,  lineColor, pointColor, pointRadius, linewidth, fixedYmin, fixedYmax) {
 
    
     var jsonData = $.ajax({
@@ -193,6 +218,9 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 	  
 		  yMin = 99999999;
 		  yMax = -999999;
+		  
+		  lastY = undefined;
+		  lastX = undefined;
 		  
 		  
 		  var data=[];
@@ -221,9 +249,6 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 		  var ctx = document.getElementById(canvasId).getContext("2d");
 		  new Chart(ctx, buildChartConfig(chartLabel + (chartLabel.trim().length > 0  ? "     (" + lastY + ")" : ""), 
 						  lineColor, pointColor, data,yMin, yMax, pointRadius, linewidth));
-						  
-		   if (callbackFunction != undefined)  callbackFunction();
-				
 		  
 		});
 }
@@ -232,8 +257,8 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 		
 	function displayCharts(){
 		if (basicMode){
-			drawLineChart("           ", 				"4", 2, "lineChartPercentEMA_basic", 			
-									"#ffffff","#3333ff", 1,0, 0, 102, updateBasicValues);	
+			fetchLatestData(updateBasicValues)
+			drawLineChart("", "4", 2, "lineChartPercentEMA_basic", "#ffffff","#3333ff", 1,0, 0, 102);
 									
 			
 			document.getElementById('basic_ver').innerHTML = "(" + script_version + ")";
@@ -256,9 +281,17 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 		}
 	}
 	
-	function updateBasicValues(){
-			document.getElementById('LevelPercentageValue_basic').innerHTML = lastY;
-			document.getElementById('LevelPercentageDate_basic').innerHTML = lastX;
+	function updateBasicValues(date, level, signal, levelEma, signalEma){
+			document.getElementById('LevelPercentageValue_basic').innerHTML = levelEma + "%";
+			document.getElementById('LevelPercentageDate_basic').innerHTML = date;
+			document.getElementById('basicSignal').innerHTML = "<br>" + level + "% / " + signal + " / " + signalEma ;
+			
+			const diffTimeSeconds = Math.abs(new Date() - new Date(date)) / 1000;			
+			
+			if (diffTimeSeconds > 90)
+				document.getElementById("LevelPercentageDate_basic").classList.add("color_red");
+			
+			
 	}
 	
 	function reloadPageIfDataChanged(){
@@ -402,6 +435,9 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 			  max-height: 200px; 
 			  min-height: 200px;
 			}
+			.color_red{
+				color: red;
+			}
     </style>
 	
   <body>
@@ -435,6 +471,14 @@ function buildChartConfig(chartLabel, lineColor, pointColor, data, yMin, yMax, p
 					<td style="text-align:left">
 						<label onclick="changeToAdvancedMode(true)" id="basic_ver" class="hand_cursor" ></label>
 					</td>
+				</tr>
+				<tr>					
+					<td/>										
+					<td style="text-align:center">
+							<label id="basicSignal" style="color:gray; font-size:9px; margin-top=10px">xxxx</label> 
+					</td>
+					<td/>				
+					
 				</tr>
 			</table>
 		</div>
