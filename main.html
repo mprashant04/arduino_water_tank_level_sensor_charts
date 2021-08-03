@@ -60,6 +60,13 @@ Date.prototype.formatHHMM = function() {
 Date.prototype.formatHHMMSS = function() {
 	return this.getHours() + ":" +  pad(this.getMinutes(),2) + ":" +  pad(this.getSeconds(),2);
 }
+function formatNumberWithSign(theNumber){
+    if(theNumber > 0){
+        return "+" + theNumber;
+    }else{
+        return theNumber.toString();
+    }
+}
 
 function pad(num, size) {
     num = num.toString();
@@ -296,7 +303,7 @@ function fetchLatestData(callbackFunction) {
 			document.getElementById('LevelPercentageDate_basic').innerHTML = latest_date;
 			document.getElementById('basicSignal').innerHTML = "<br>" + latest_level + "% / " + latest_signal + " / " + latest_signalEma ;
 			
-			document.title = latest_levelEma + "%" + "  /  " + latest_signalEma + "  (" + (latest_signal - latest_signalEma).toFixed(1) + ")"; 
+			document.title = latest_levelEma + "%" + "  /  " + latest_signalEma + "  (" + formatNumberWithSign((latest_signal - latest_signalEma).toFixed(1)) + ")"; 
 			
 			if (enableAutoRefresh == 1)
 				document.title = document.title  + "  ↻";
