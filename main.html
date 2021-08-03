@@ -296,7 +296,7 @@ function fetchLatestData(callbackFunction) {
 			document.getElementById('LevelPercentageDate_basic').innerHTML = latest_date;
 			document.getElementById('basicSignal').innerHTML = "<br>" + latest_level + "% / " + latest_signal + " / " + latest_signalEma ;
 			
-			document.title = latest_levelEma + "%" + "  /  " + latest_signalEma + "  (" + (latest_signal - latest_signalEma) + ")"; 
+			document.title = latest_levelEma + "%" + "  /  " + latest_signalEma + "  (" + num.toFixed(latest_signal - latest_signalEma, 1) + ")"; 
 						
 			if (diffTimeSeconds > 60){
 				document.getElementById("LevelPercentageDate_basic").classList.add("color_red");
