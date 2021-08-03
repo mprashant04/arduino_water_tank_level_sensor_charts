@@ -299,7 +299,7 @@ function fetchLatestData(callbackFunction) {
 			document.title = latest_levelEma + "%" + "  /  " + latest_signalEma + "  (" + (latest_signal - latest_signalEma).toFixed(1) + ")"; 
 			
 			if (enableAutoRefresh == 1)
-				document.title = document.title  + "  &#8635;"	;
+				document.title = document.title  + "  ↻";
 						
 			if (diffTimeSeconds > 60){
 				document.getElementById("LevelPercentageDate_basic").classList.add("color_red");
