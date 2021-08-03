@@ -299,7 +299,7 @@ function fetchLatestData(callbackFunction) {
 			if (diffTimeSeconds > 60)
 				document.getElementById("LevelPercentageDate_basic").classList.add("color_red");
 			
-			document.title = latest_levelEma + "%";
+			document.title = latest_levelEma + "%" + "  /  " + latest_signalEma ;
 	
 		}
 	}
