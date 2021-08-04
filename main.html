@@ -305,7 +305,7 @@ function fetchLatestData(callbackFunction) {
 			
 			document.getElementById('LevelPercentageValue_basic').innerHTML = latest_levelEma + "%";
 			document.getElementById('LevelPercentageDate_basic').innerHTML = latest_date;
-			document.getElementById('basicSignal').innerHTML = "<br>" + latest_level + "% / " + latest_signal + " / " + latest_signalEma + "   >>> " + pageLoadedOn;
+			document.getElementById('basicSignal').innerHTML = "<br>" + latest_level + "% / " + latest_signal + " / " + latest_signalEma;
 			
 			document.title = latest_levelEma + "%" + "  /  " + latest_signalEma + "  (" + formatNumberWithSign((latest_signal - latest_signalEma).toFixed(1)) + ")"; 
 									
