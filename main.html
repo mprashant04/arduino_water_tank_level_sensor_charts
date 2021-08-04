@@ -29,6 +29,7 @@ latest_signalEma = 0;
 latest_level = 0;
 latest_signal = 0;		
 latest_populated = false;
+pageLoadedOn = new Date();
 
 
 //https://www.norwegiancreations.com/2015/10/tutorial-potentiometers-with-arduino-and-filtering/
@@ -201,10 +202,8 @@ function fetchLatestData(callbackFunction) {
 				latest_populated = true;
 				
 				if (lastEntryId > 0 && enableAutoRefresh == 1){
-					if (basicMode){
-						//do not reload in basic mode
-					}
-					else{					
+					const diffTimeSeconds = Math.abs(new Date() - pageLoadedOn) / 1000;			
+					if ( (basicMode && diffTimeSeconds > 120) || !basicMode){
 						window.location.reload();
 					}
 				}
@@ -309,10 +308,7 @@ function fetchLatestData(callbackFunction) {
 			document.getElementById('basicSignal').innerHTML = "<br>" + latest_level + "% / " + latest_signal + " / " + latest_signalEma ;
 			
 			document.title = latest_levelEma + "%" + "  /  " + latest_signalEma + "  (" + formatNumberWithSign((latest_signal - latest_signalEma).toFixed(1)) + ")"; 
-			
-			if (enableAutoRefresh == 1)
-				document.title = document.title  + "  ↻";
-						
+									
 			if (diffTimeSeconds > 60){
 				document.getElementById("LevelPercentageDate_basic").classList.add("color_red");
 				document.title = document.title  + "   ***"				
