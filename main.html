@@ -201,9 +201,9 @@ function fetchLatestData(callbackFunction) {
 				
 				latest_populated = true;
 				
-				if (lastEntryId > 0 && enableAutoRefresh == 1){
+				if (lastEntryId > 0){
 					const diffTimeSeconds = Math.abs(new Date() - pageLoadedOn) / 1000;			
-					if ( (basicMode && diffTimeSeconds > 120) || !basicMode){
+					if ( (basicMode && diffTimeSeconds > 120) || (!basicMode && enableAutoRefresh == 1)){
 						window.location.reload();
 					}
 				}
@@ -305,7 +305,7 @@ function fetchLatestData(callbackFunction) {
 			
 			document.getElementById('LevelPercentageValue_basic').innerHTML = latest_levelEma + "%";
 			document.getElementById('LevelPercentageDate_basic').innerHTML = latest_date;
-			document.getElementById('basicSignal').innerHTML = "<br>" + latest_level + "% / " + latest_signal + " / " + latest_signalEma;
+			document.getElementById('basicSignal').innerHTML = "<br>" + latest_level + "% / " + latest_signal + " / " + latest_signalEma + "   >>> " + pageLoadedOn;
 			
 			document.title = latest_levelEma + "%" + "  /  " + latest_signalEma + "  (" + formatNumberWithSign((latest_signal - latest_signalEma).toFixed(1)) + ")"; 
 									
