@@ -218,7 +218,7 @@ function fetchLatestData(callbackFunction) {
 
 
 
-  function drawLineChart(chartLabel, fieldNumber, days, canvasId,  lineColor, pointColorUp,pointColorDown , pointRadius, linewidth, fixedYmin, fixedYmax) {
+  function drawLineChart(chartLabel, fieldNumber, days, canvasId,  lineColor, pointColorUp, pointColorDown, pointUpChangeMargin, pointRadius, linewidth, fixedYmin, fixedYmax) {
 
    
     var jsonData = $.ajax({
@@ -266,14 +266,28 @@ function fetchLatestData(callbackFunction) {
 		  lastY = data[data.length-1].y;
 		  lastX = data[data.length-1].x;
 		  
-		  var pointBackgroundColors = [];		
-		  for (i = 1; i < data.length; i++) {
-			if (data[i].y > data[i-1].y) {
-				pointBackgroundColors.push(pointColorUp);
-			} else {
-				pointBackgroundColors.push(pointColorDown);
-			}
+		  var pointBackgroundColors = [];
+		  var directionDown = true;
+		  
+		  
+		  //console.log(chartLabel + "=================================================" );
+		  for (i = 0; i < data.length; i++) {
+				if (i==0){
+					directionDown = true;
+				}
+				else if (data[i].y > strip(data[i-1].y + (directionDown ? pointUpChangeMargin : 0))) {
+					directionDown = false;
+				} else {				
+					directionDown = true;
+				}
+				
+				//if (i>0)	console.log ("     "+ data[i].y + "/" + data[i-1].y + "  (" + (data[i].y-data[i-1].y) + ")  :: " + directionDown)		;	
+				pointBackgroundColors.push(directionDown ? pointColorDown : pointColorUp);			
 		  }
+		  
+		  //console.log(chartLabel + " : " + pointBackgroundColors.length + "  / " + pointUpChangeMargin);
+		  
+		  
 		
 
 		  var ctx = document.getElementById(canvasId).getContext("2d");
@@ -283,26 +297,31 @@ function fetchLatestData(callbackFunction) {
 		});
 }
 
+//some b**sh**t float precision issue in JS, https://stackoverflow.com/questions/1458633/how-to-deal-with-floating-point-number-precision-in-javascript
+function strip(number) {
+    return (parseFloat(number).toPrecision(12));
+}
+
 	
 		
 	function displayCharts(){
 		if (basicMode){
-			drawLineChart("", "4", 2, "lineChartPercentEMA_basic", "#ffffff","#000000","#00ff00", 1,0, 0, 110);		
+			drawLineChart("", "4", 2, "lineChartPercentEMA_basic", "#ffffff","#000000","#00ff00", 0.1, 1,0, 0, 110);		
 		
 			document.getElementById('basic_ver').innerHTML = "(" + script_version + ")";
 			document.getElementById('basic_btn_' + getParameterByName('days')).classList.add("button_highlight");
 			//if (enableAutoRefresh == 1 ) document.getElementById('basic_btn_auto_refresh').classList.add("button_highlight_blue");
 		}
 		else{
-			drawLineChart("Signal", 					"1", 0, "lineChartSignal", 				"#0080ff","#6666ff","#6666ff", 2,1);				
-			drawLineChart("Signal EMA", 				"3", 0, "lineChartSignalEMA", 				"#0080ff","#6666ff","#6666ff", 2,1);		
-			drawLineChart("Level %", 					"2", 0, "lineChartPercent", 				"#99cc00","#33cc00","#33cc00", 2,1);				
-			drawLineChart("Level % EMA", 				"4", 0, "lineChartPercentEMA", 			"#99cc00","#33cc00","#33cc00", 2,1);		
+			drawLineChart("Signal", 					"1", 0, "lineChartSignal", 				"#0080ff","#000000","#00ccff", 0, 2, 1);				
+			drawLineChart("Signal EMA", 				"3", 0, "lineChartSignalEMA", 				"#0080ff","#000000","#00ccff",0.1, 2,1);		
+			drawLineChart("Level %", 					"2", 0, "lineChartPercent", 				"#99cc00","#000000","#33cc00",0, 2,1);				
+			drawLineChart("Level % EMA", 				"4", 0, "lineChartPercentEMA", 			"#99cc00","#000000","#33cc00",0.1, 2,1);		
 			
-			drawLineChart("Uptime", 					"5", 0, "lineChartUptime", 				"#00cccc","#006666","#006666", 2,1);
-			drawLineChart("API Call Failures",			"6", 0, "lineChartApiCallFailures", 		"#b366ff","#8000ff","#8000ff", 2,1);
-			drawLineChart("Signal Threshold Jumps (Small)",		"7", 0, "lineChartSignalThresholdJumpsSmall",	"#ff8566","#ff3300","#ff3300", 2,1);
-			drawLineChart("Signal Threshold Jumps (Big)",		"8", 0, "lineChartSignalThresholdJumpsBig",	"#ff8566","#ff3300","#ff3300", 2,1);
+			drawLineChart("Uptime", 					"5", 0, "lineChartUptime", 				"#00cccc","#006666","#006666",0, 2,1);
+			drawLineChart("API Call Failures",			"6", 0, "lineChartApiCallFailures", 		"#b366ff","#8000ff","#8000ff",0, 2,1);
+			drawLineChart("Signal Threshold Jumps (Small)",		"7", 0, "lineChartSignalThresholdJumpsSmall",	"#ff8566","#ff3300","#ff3300",0, 2,1);
+			drawLineChart("Signal Threshold Jumps (Big)",		"8", 0, "lineChartSignalThresholdJumpsBig",	"#ff8566","#ff3300","#ff3300",0, 2,1);
 			
 			
 			document.getElementById('info').innerHTML = new Date().formatHHMMSS() + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  (" + script_version + ")";
