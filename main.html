@@ -306,7 +306,7 @@ function strip(number) {
 		
 	function displayCharts(){
 		if (basicMode){
-			drawLineChart("", "4", 2, "lineChartPercentEMA_basic", "#ffffff","#000000","#00ff00", 0.1, 1,0, 0, 110);		
+			drawLineChart("", "4", 2, "lineChartPercentEMA_basic", "#ffffff","#000000","#00ff00", 0.0, 1,0, 0, 110);		
 		
 			document.getElementById('basic_ver').innerHTML = "(" + script_version + ")";
 			document.getElementById('basic_btn_' + getParameterByName('days')).classList.add("button_highlight");
@@ -314,9 +314,9 @@ function strip(number) {
 		}
 		else{
 			drawLineChart("Signal", 					"1", 0, "lineChartSignal", 				"#0080ff","#000000","#00ccff", 0, 2, 1);				
-			drawLineChart("Signal EMA", 				"3", 0, "lineChartSignalEMA", 				"#0080ff","#000000","#00ccff",0.1, 2,1);		
+			drawLineChart("Signal EMA", 				"3", 0, "lineChartSignalEMA", 				"#0080ff","#000000","#00ccff",0.0, 2,1);		
 			drawLineChart("Level %", 					"2", 0, "lineChartPercent", 				"#99cc00","#000000","#33cc00",0, 2,1);				
-			drawLineChart("Level % EMA", 				"4", 0, "lineChartPercentEMA", 			"#99cc00","#000000","#33cc00",0.1, 2,1);		
+			drawLineChart("Level % EMA", 				"4", 0, "lineChartPercentEMA", 			"#99cc00","#000000","#33cc00",0.0, 2,1);		
 			
 			drawLineChart("Uptime", 					"5", 0, "lineChartUptime", 				"#00cccc","#006666","#006666",0, 2,1);
 			drawLineChart("API Call Failures",			"6", 0, "lineChartApiCallFailures", 		"#b366ff","#8000ff","#8000ff",0, 2,1);
