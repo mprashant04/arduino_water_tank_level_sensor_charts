@@ -31,6 +31,7 @@ const IDX_SIGNAL_JUMP_SMALL = 5
 const IDX_SIGNAL_JUMP_BIG = 6
 const IDX_UPTIME_MINUTES = 7
 const IDX_FILLING_IN_PROG = 8
+const IDX_FILLING_COUNTER = 9
 
 
 lastSamples= 200;
@@ -342,6 +343,7 @@ function strip(number) {
 			drawLineChart(results, "Level %", 					IDX_LEVEL_PC, 					0, "lineChartPercent", 				"#99cc00","#000000","#33cc00",0, 2,1);				
 			drawLineChart(results, "Level % EMA", 				IDX_LEVEL_PC_EMA, 				0, "lineChartPercentEMA", 			"#99cc00","#000000","#33cc00",0.0, 2,1);		
 			drawLineChart(results, "Filling in progress", 		IDX_FILLING_IN_PROG, 			0, "lineChartFilling", 				"#fff2cc","#ffa31a","#ffa31a",0, 2,1);					
+			drawLineChart(results, "Filling Counter", 			IDX_FILLING_COUNTER, 			0, "lineChartFillingCounter", 		"#fff2cc","#ffa31a","#ffa31a",0, 2,1);					
 			
 			
 			drawLineChart(results, "Uptime", 					IDX_UPTIME_MINUTES, 			0, "lineChartUptime", 				"#00cccc","#006666","#006666",0, 2,1);
@@ -512,6 +514,14 @@ function strip(number) {
 			  max-height: 300px; 
 			  min-height: 300px;
 			}
+			.fixed_height_100 {
+			  max-height: 100px; 
+			  min-height: 100px;
+			}
+			.fixed_height_150 {
+			  max-height: 150px; 
+			  min-height: 150px;
+			}
 			.fixed_height_200 {
 			  max-height: 200px; 
 			  min-height: 200px;
@@ -613,11 +623,12 @@ function strip(number) {
 			  <canvas  id="lineChartSignalEMA"  				class="fixed_height_200"></canvas>
 			  <canvas  id="lineChartPercent"  					class="fixed_height_200"></canvas>	  
 			  <canvas  id="lineChartPercentEMA"  				class="fixed_height_200"></canvas>	  
-			  <canvas  id="lineChartFilling"  					class="fixed_height_200"></canvas>	  
+			  <canvas  id="lineChartFilling"  					class="fixed_height_100"></canvas>	  
+			  <canvas  id="lineChartFillingCounter" 			class="fixed_height_150"></canvas>	  
 			  <canvas  id="lineChartApiCallFailures"  			class="fixed_height_200"></canvas>	  
-			  <canvas  id="lineChartSignalThresholdJumpsSmall"  class="fixed_height_200"></canvas>	  
-			  <canvas  id="lineChartSignalThresholdJumpsBig"  	class="fixed_height_200"></canvas>	  
-			  <canvas  id="lineChartUptime"  					class="fixed_height_200"></canvas>	  
+			  <canvas  id="lineChartSignalThresholdJumpsSmall"  class="fixed_height_150"></canvas>	  
+			  <canvas  id="lineChartSignalThresholdJumpsBig"  	class="fixed_height_150"></canvas>	  
+			  <canvas  id="lineChartUptime"  					class="fixed_height_150"></canvas>	  
 		</div>			
 	 
       </div>
