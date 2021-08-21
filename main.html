@@ -36,7 +36,7 @@ const IDX_FILLING_COUNTER = 9
 
 lastSamples= 200;
 lastEntryId = -1;
-script_version = "v1.5"
+script_version = "v1.6"
 basicMode =  (getParameterByName('advanced_mode') != '1') ;
 
 latest_date = undefined;			
@@ -351,13 +351,12 @@ function strip(number) {
 			drawLineChart(results, "Signal Threshold Jumps (Small)", IDX_SIGNAL_JUMP_SMALL, 	0, "lineChartSignalThresholdJumpsSmall",	"#ff8566","#ff3300","#ff3300",0, 2,1);
 			drawLineChart(results, "Signal Threshold Jumps (Big)",	 IDX_SIGNAL_JUMP_BIG, 		0, "lineChartSignalThresholdJumpsBig",	"#ff8566","#ff3300","#ff3300",0, 2,1);
 			
-			
-			document.getElementById('info').innerHTML = new Date().formatHHMMSS() + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  (" + script_version + ")";
+						
 			document.getElementById('infoSamples').innerHTML =  getParameterByName('samples');		
 		}
 	}
 	
-	function refreshBasicModeElements(){	
+	function refreshLatestDataElements(){	
 		if (latest_populated){
 			const diffTimeSeconds = Math.abs(new Date() - new Date(latest_date)) / 1000;			
 			
@@ -365,14 +364,18 @@ function strip(number) {
 			document.getElementById('LevelPercentageDate_basic').innerHTML = latest_date;
 			document.getElementById('basicSignal').innerHTML = "<br>" + latest_level + "% / " + latest_signal + " / " + latest_signalEma;
 			
+			document.getElementById('info_advancedMode').innerHTML = latest_date + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  (" + script_version + ")";
+			
 			document.title = latest_levelEma + "%" + "  /  " + latest_signalEma + "  (" + formatNumberWithSign((latest_signal - latest_signalEma).toFixed(1)) + ")"; 
 									
 			if (diffTimeSeconds > 60){
 				document.getElementById("LevelPercentageDate_basic").classList.add("color_red");
+				document.getElementById("info_advancedMode").classList.add("color_red");
 				document.title = document.title  + "   ***"				
 			}
 			else{
 				document.getElementById("LevelPercentageDate_basic").classList.remove("color_red");
+				document.getElementById("info_advancedMode").classList.remove("color_red");				
 			}
 		}
 	}
@@ -422,7 +425,7 @@ function strip(number) {
 	}
 		
 	setInterval(fetchLatestData, 3000);
-	setInterval(refreshBasicModeElements, 1000);	
+	setInterval(refreshLatestDataElements, 1000);	
 	
 	window.onload = function() {
 		if (basicMode)
@@ -432,7 +435,7 @@ function strip(number) {
 		
 		fetchDataAndDisplayCharts();
 		
-		fetchLatestData(basicMode ? refreshBasicModeElements : undefined);
+		fetchLatestData(refreshLatestDataElements);
 
 		if (enableAutoRefresh == 1)
 			document.getElementById("auto_refresh_off").style.display = "none";
@@ -624,10 +627,10 @@ function strip(number) {
 						<td style="text-align:right">
 							<div>		
 								
-								<label id="auto_refresh_off" class="hand_cursor" onclick="enableRefresh(1)"><font color="red" size="+1"  >&#128472;</font></label>	  													
-								<label id="auto_refresh_on"  class="hand_cursor" onclick="enableRefresh(0)"><font color="green" size="+1">&#128472;</font></label>	  	  
+								<label id="auto_refresh_off" class="hand_cursor" onclick="enableRefresh(1)"><font color="red" size="+1"  >&#8635;</font></label>	  													
+								<label id="auto_refresh_on"  class="hand_cursor" onclick="enableRefresh(0)"><font color="green" size="+1">&#8635;</font></label>	  	  
 								
-								<label id="info"/></label>	  
+								<label id="info_advancedMode"/></label>	  
 							</div>	
 						</td>
 					</tr>
