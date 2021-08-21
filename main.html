@@ -36,7 +36,7 @@ const IDX_FILLING_COUNTER = 9
 
 lastSamples= 200;
 lastEntryId = -1;
-script_version = "v1.4"
+script_version = "v1.5"
 basicMode =  (getParameterByName('advanced_mode') != '1') ;
 
 latest_date = undefined;			
@@ -534,6 +534,10 @@ function strip(number) {
 			  max-height: 100px; 
 			  min-height: 100px;
 			}
+	                .fixed_height_85 {
+			  max-height: 85px; 
+			  min-height: 85px;
+			}	
 	     		.fixed_height_75 {
 			  max-height: 75px; 
 			  min-height: 75px;
@@ -636,7 +640,7 @@ function strip(number) {
 			  <canvas  id="lineChartSignalEMA"  				class="fixed_height_200"></canvas>
 			  <canvas  id="lineChartPercent"  				class="fixed_height_200"></canvas>	  
 			  <canvas  id="lineChartPercentEMA"  				class="fixed_height_200"></canvas>	  
-			  <canvas  id="lineChartFilling"  				class="fixed_height_75"></canvas>	  
+			  <canvas  id="lineChartFilling"  				class="fixed_height_85"></canvas>	  
 			  <canvas  id="lineChartFillingCounter" 			class="fixed_height_125"></canvas>	  
 			  <canvas  id="lineChartApiCallFailures"  			class="fixed_height_175"></canvas>	  
 			  <canvas  id="lineChartSignalThresholdJumpsSmall"  		class="fixed_height_100"></canvas>	  
