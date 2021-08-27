@@ -18,6 +18,8 @@
 enableAutoRefresh =  getParameterByName('auto_refresh');
 if (enableAutoRefresh != 1 && enableAutoRefresh != 0) enableAutoRefresh = 0;
 
+const script_version = "v1.7"
+	
 const READ_API_KEY = "FRAHSQ1UI96MEK2F"
 const CHANNEL = "1481772"
 const DATA_SPLITTER = '_'
@@ -37,7 +39,6 @@ const IDX_FILLING_COUNTER = 9
 
 lastSamples= 200;
 lastEntryId = -1;
-script_version = "v1.6"
 basicMode =  (getParameterByName('advanced_mode') != '1') ;
 
 latest_date = undefined;			
